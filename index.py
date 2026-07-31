@@ -1,121 +1,111 @@
-# @property ka actual syntax
+# # 📚 Aaj Tak Humne Kya Seekha?
 
-#Step 1: without @property
-class Employee:
+# ### ✅ Encapsulation
 
-    def __init__(self, salary):
-        self.__salary = salary
+# * Data ko direct access se protect karna.
+# * Controlled access provide karna.
+# * `__` security ke liye nahi, **name mangling** ke liye hai.
+# * Accidental access se bachata hai.
 
-    def get_salary(self):
-        return self.__salary
+# ---
 
-    def set_salary(self, salary):
-        if salary >= 0:
-            self.__salary = salary
+# ### ✅ Getter & Setter
 
-emp = Employee(50000)
+# Getter
 
-print(emp.get_salary())
+# ```python
+# emp.get_salary()
+# ```
 
-emp.set_salary(60000)
+# * Data read karta hai.
+# * Validation, logging, calculation kar sakta hai.
 
-print(emp.get_salary())
+# Setter
 
-# Lekin Python bolta hai "Ye method jaisa nahi lagna chahiye."
+# ```python
+# emp.set_salary(50000)
+# ```
 
-# Step 2: Actual Syntax
+# * Data update karta hai.
+# * Validation laga sakta hai.
 
-class Employee:
+# ---
 
-    def __init__(self, salary):
-        self.__salary = salary
+# ### ✅ `@property`
 
-    @property
-    def salary(self):
-        return self.__salary
+# Without property
 
-    @salary.setter
-    def salary(self, value):
-        if value >= 0:
-            self.__salary = value
-        else:
-            print("Invalid Salary")
+# ```python
+# emp.get_salary()
+# emp.set_salary(50000)
+# ```
 
-# Step 3: Har Line Ka Meaning
+# With property
 
-class Employee:
+# ```python
+# print(emp.salary)
 
-    def __init__(self, salary): 
-        self.__salary = salary # Object me private attribute create hua.
+# emp.salary = 50000
+# ```
 
-    @property # Is method ko normal method ki tarah mat treat karo.
-    def salary(self):
-        return self.__salary
+# Internally:
 
-    @salary.setter
-    def salary(self, value):
-        if value >= 0:
-            self.__salary = value
-        else:
-            print("Invalid Salary")
+# ```text
+# emp.salary
+#      ↓
+# Getter execute
+# ```
 
-emp = Employee(50000)
+# ```text
+# emp.salary = 50000
+#         ↓
+# Setter execute
+# ```
 
-emp.salary #Aur Python automatically getter execute karega.
+# ---
 
+# # 🧠 Sabse Important Concept
 
+# Ab tumhe ye difference clear hona chahiye.
 
-# jab aap object create karte hain tab constructor (Python mein __init__ method) automatically run hota hai, aur memory mein ek naya object ban kar uske variables save hote hain.Constructor Kab Run Hota Hai?Jab aap obj = ClassName() likh kar naya object banate hain, tab Python pehle memory mein ek khali object banata hai (__new__ method se).Uske turant baad, Python automatic tarike se __init__ method (constructor) ko call kar deta hai, jisme object ki initial values ya data set hota hai.
+# ### Object Memory
 
-class Demo:
+# ```python
+# self.salary
+# ```
 
-    def __init__(self):
-        self.x = 10
+# Matlab:
 
-    def change(self):
+# ```text
+# Object ke andar attribute
+# ```
 
-        x = self.x
+# ---
 
-        x = 50
+# ### Local Memory
 
-d = Demo()
+# ```python
+# salary = self.salary
+# ```
 
-d.change()
+# Matlab:
 
-print(d.x)
+# ```text
+# Ek naya local variable
+# ```
 
+# ---
 
-# 
+# ### Direct Return
 
-class Employee:
+# ```python
+# return self.salary
+# ```
 
-    def __init__(self):
-        self.__salary = 50000
+# Matlab:
 
-    @property
-    def salary(self):
-        print("Getter")
-        return self.__salary
+# ```text
+# Object se value lekar directly return.
+# ```
 
-    @salary.setter
-    def salary(self, value):
-        print("Setter")
-        self.__salary = value
-
-
-emp = Employee()
-
-x = emp.salary
-
-print(x)
-
-print(emp.salary)
-
-
-# print()
-# Screen par output dikhata hai.
-# Return value None hoti hai.
-# Koi data permanently store nahi karta.
-# return
-# Function se value bahar bhejta hai.
-# Caller us value ko variable me store kar sakta hai.
+# Koi naya local variable create nahi hota.
