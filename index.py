@@ -1,111 +1,123 @@
-# # 📚 Aaj Tak Humne Kya Seekha?
+# Topic: @property.setter Deep Dive
 
-# ### ✅ Encapsulation
+# Aaj ka goal:
 
-# * Data ko direct access se protect karna.
-# * Controlled access provide karna.
-# * `__` security ke liye nahi, **name mangling** ke liye hai.
-# * Accidental access se bachata hai.
+# Python ko kaise pata chalta hai ki emp.salary = 50000 likhne par setter method call karni hai?
 
-# ---
+# Ye internal working samajhna hai.
 
-# ### ✅ Getter & Setter
+class Employee:
 
-# Getter
+    def __init__(self):
+        self.__salary = 50000
 
-# ```python
-# emp.get_salary()
-# ```
+    @property
+     #Ab class ke andar salary naam ka property object aa gaya.
+     #Ab salary ek normal function nahi raha.
+    def salary(self):
+        return self.__salary
 
-# * Data read karta hai.
-# * Validation, logging, calculation kar sakta hai.
+    @salary.setter
+    #Jo upar salary property bani thi, uske saath ye setter attach kar do
+    def salary(self, value):
+        self.__salary = value
 
-# Setter
+# Dono methods ka naam salary hi hai.
 
-# ```python
-# emp.set_salary(50000)
-# ```
+# salary Property
 
-# * Data update karta hai.
-# * Validation laga sakta hai.
+# ↓
 
-# ---
+# Setter Exist?
 
-# ### ✅ `@property`
+# ↓
 
-# Without property
+# Yes
 
-# ```python
-# emp.get_salary()
-# emp.set_salary(50000)
-# ```
+# ↓
 
-# With property
+# Call Setter
 
-# ```python
-# print(emp.salary)
+# ↓
 
-# emp.salary = 50000
-# ```
+# value = 70000
 
-# Internally:
+# ↓
 
-# ```text
-# emp.salary
-#      ↓
-# Getter execute
-# ```
+# self.__salary = value
 
-# ```text
-# emp.salary = 50000
-#         ↓
-# Setter execute
-# ```
+emp = Employee()
+emp.salary = 70000 #Pehle wale me setter call hoti hai.
+emp.__salary = 70000 #Class ke bahar __salary likhne par name mangling apply nahi hoti.
 
-# ---
+# To Python object me ek naya attribute bana dega:
 
-# # 🧠 Sabse Important Concept
+# {
+#     "_Employee__salary":50000,
 
-# Ab tumhe ye difference clear hona chahiye.
+#     "__salary":70000
+# }
 
-# ### Object Memory
 
-# ```python
-# self.salary
-# ```
+# 🧠 Memory Rule
+
+# Aaj ka golden rule:
+
+# Ye
+emp.salary = 50000
 
 # Matlab:
 
-# ```text
-# Object ke andar attribute
-# ```
-
-# ---
-
-# ### Local Memory
-
-# ```python
-# salary = self.salary
-# ```
+# Setter ko request bhejo.
+# Ye
+emp.__salary = 50000
 
 # Matlab:
 
-# ```text
-# Ek naya local variable
-# ```
+# Object me naya attribute banao.
 
-# ---
 
-# ### Direct Return
+class Employee:
 
-# ```python
-# return self.salary
-# ```
+    def __init__(self):
+        self.__salary = 50000
 
-# Matlab:
+    @property
+    def salary(self):
+        print("Getter")
+        return self.__salary
 
-# ```text
-# Object se value lekar directly return.
-# ```
+    @salary.setter
+    def salary(self, value):
+        print("Setter")
+        self.__salary = value
 
-# Koi naya local variable create nahi hota.
+
+emp = Employee()
+
+emp.salary = 60000
+
+print(emp.salary)
+
+print(emp.__dict__)
+
+
+# 💼 Interview Perspective
+
+# Interviewer:
+
+# Why do getter and setter methods have the same name when using @property?
+
+# Expected answer:
+
+# Because both methods belong to the same property. @property creates the property, and @property_name.setter attaches the setter to that existing property. Python then automatically calls the getter when reading the attribute and the setter when assigning to it.
+
+# Encapsulation → Data ko protect karta hai.
+# Property → Controlled access deta hai.
+# Abstraction → Unnecessary implementation details ko hide karta hai.
+
+
+#Property ka use karne se hum data ko protect kar sakte hai aur controlled access provide kar sakte hai. Getter aur setter methods ke through hum data ko read aur write kar sakte hai bina direct access ke.
+
+# property object ke andar getter aur setter methods attach hote hai. Jab hum property ko read karte hai to getter call hoti hai aur jab hum property ko write karte hai to setter call hoti hai. Isse hum data ko encapsulate kar sakte hai aur unnecessary implementation details ko hide kar sakte hai.
+
