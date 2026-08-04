@@ -1,263 +1,117 @@
-# Topic: Property Objects
+#Abstruction
 
-# First python ek object banata hai jo class ka object hota hai. Ye object class ke andar defined methods ko access karne ke liye use hota hai. Property objects ka use karke hum class ke attributes ko encapsulate kar sakte hain aur unke access ko control kar sakte hain.
+# Abstraction is the process of hiding unnecessary implementation details and exposing only the essential features to the user.
 
-# python mein property objects ka use karne ke liye hum `property()` function ka use karte hain. Ye function ek method ko property mein convert karta hai, jisse hum us method ko attribute ki tarah access kar sakte hain.
+# Encapsulation vs Abstraction
 
-class Employee:
+# Encapsulation   	                   Abstraction
+# Data ko protect karta hai	    Complexity ko hide karta hai
+# Focus on data	                Focus on behavior
+# private attributes        	Abstract classes / interfaces
+# Controlled access	            Simplified interface
+
+#Bank class with abstraction    
+class bank:
+    name = "Bank of India"
+
+    def __init__(self, account_number, balance):
+        self.account_number = account_number
+        self.__balance = balance
+
+    def deposit(self, amount):
+        self.__balance += amount
+        print(f"Deposited {amount}. New balance: {self.__balance}")
+
+    def withdraw(self, amount):
+        if self.__balance >= amount:
+            self.__balance -= amount
+            print(f"Withdrew {amount}. New balance: {self.__balance}")
+        else:
+            print("Insufficient funds.")
 
     @property
-    def salary(self):
-        return self.__salary
+    def get_balance(self):
+        return self.__balance
 
-    
-# Explaination:
-# Property Object (Ye naya concept hai) Ye class banate waqt Python khud create karta hai. Suppose @property method create kiya to ham sochte hai ke bas ek getter method create ho gaya. Lekin internally Python kuch aur karta hai.Pehle koi bhi function normal function hota hai.@property lagte hi Python bolta hai: Is function ko special bana do. lekin Python khud ek property object create karta hai jisme getter, setter aur deleter methods hote hain. Ye jo special cheez bani...Isko Python bolta hai: Property Object
+bank_account = bank("123456789", 1000)
+bank_account.deposit(500)
+bank_account.withdraw(200)
+print(f"Final balance: {bank_account.get_balance}") 
 
-# property object values store nahi karta. Ye sirf information rakhta hai.
-# jaise ke:
-# Property Object
 
-# Name : salary
 
-# Getter : salary()
+# Abstraction means hiding the implementation details and showing only the essential functionality to the user. It helps reduce complexity and allows users to focus on what an object does rather than how it works internally.
 
-# Setter : None
+# Example of Abstraction in Python:
+# Suppose hum Vehicle class bana rahe hain.
 
-# Deleter : None
+class Vehicle:
 
+    def start(self):
+        pass
 
-# Ab Setter Aata Hai
-    @salary.setter
-    def salary(self, value):
-        print("Setter")
-        self.__salary = value
+# Humare paas ho sakte hain:
 
+# Car
+# Bike
+# Truck
+# Bus
 
-emp = Employee()
+# Sabko start karna hai.
+# Lekin Car ka start alag.
+# Bike ka alag.
+# Truck ka alag.
 
-emp.salary = 60000
+# Vehicle class ko start() method ka code likhna chahiye?
+# Jo bhi meri child class hogi, usko start() method implement karna hi padega.
 
-print(emp.salary)
+# Vehicle ko nahi pata Car ka engine kaise start hota hai.
+# Vehicle sirf rule banata hai.
+# "Har vehicle me start() hona chahiye."
 
-print(emp.__dict__)
+# Agar hum Vehicle class me start() method ka code likhenge, to Car ko start() method ko override karna padega. ham parent class ke methods ko inherit karte hain. Lekin neccessary nahi hai ki har child class ke liye parent class ke methods ka code same ho. Isliye hum start() method ko parent class me define karte hain, lekin uska implementation child class me karte hain.
 
-# Python property object ko update karta hai. pehle se jo salary method tha usko update karta hai aur setter method ko add kar deta hai. Ab ye property object ke andar getter aur setter dono methods hote hain.
+# Hame ye ensure karna hai ki har vehicle me start() method ho. Isliye hum start() method ko abstract method banate hain. Abstraction ka matlab hai ki hum implementation details ko hide karte hain aur sirf essential features ko expose karte hain. Not neccessary ke ham Bas ek dummy method chal rahe hai ye inheritance se hota hai isse ko ham avoid karte hai aur abstract method banate hai.
 
-# Isliye Syntax Hai
-# @property
+# Agar parent class sirf rule define kar rahi hai, implementation nahi...To usko Abstract Class banao. Aur method ko bolo Child class, tumhe ye method likhna hi padega.
 
-# ↓
-
-# Property Object banao.
-
-# @salary.setter
-
-# ↓
-
-# Us property object ke andar setter attach karo.
-
-
-# Employee Class
-
-#         │
-
-#         ▼
-
-# salary Property Object
-
-#  ┌───────────────┐
-#  │ Getter Method │
-#  │ Setter Method │
-#  │ Deleter       │
-#  └───────────────┘
-
-
-
-# 📦 Global Memory
-
-# ↓
-
-# 📦 Class Memory
-
-# ↓
-
-# 📦 Object Memory
-
-# ↓
-
-# 📦 Function Local Memory
-
-# Python ka flow:
-
-# Global Memory
-
-# emp
-
-# ↓
-
-# Object
-
-# ↓
-
-# Class
-
-# ↓
-
-# salary Property Object
-
-# ↓
-
-# Setter Function
-
-# ↓
-
-# Local Memory
-
-# self
-
-# value
-
-# ↓
-
-# Object Memory Update
-
-
-"""
-❗Ek Chhoti Technical Note
-
-Main ek baat intentionally simplify kar raha hoon.
-
-Reality me Python ke andar property ek built-in class hai.
-
-Jab tum likhti ho:
-
-@property
-def salary(self):
-
-To Python internally lagbhag aisa karta hai (conceptually):
-
-salary = property(salary)
-
-Yaani property naam ki built-in class ka ek object ban jata hai, jo getter, setter aur deleter ko manage karta hai.
-
-Abhi is implementation ko yaad karne ki zarurat nahi hai. Bas itna yaad rakho ki property object ek manager ki tarah kaam karta hai—wo data store nahi karta, wo batata hai ki read aur write hone par kaunsa method chalana hai. """
-
-
-# 🎤 Interview Answer 1 (Best for Freshers)
-
-# Q. What is @property in Python?
-
-# @property is a built-in decorator that converts a method into a property. It allows us to access a method like a normal attribute while still executing the method internally. This makes the code cleaner, more readable, and allows validation or other logic without changing how the class is used.
-
-# 🎤 Interview Answer 2 (If Asked: What is a Property Object?)
-
-# A property object is a special object created by Python when we use @property. It does not store the actual data. Instead, it keeps references to the getter, setter, and deleter methods and decides which method to call when an attribute is read, written, or deleted.
-
-# One-line version:
-
-# A property object acts as a manager between attribute access and the actual getter/setter methods.
-
-# 🎤 Interview Answer 3 (Internal Working)
-
-# Q. What happens internally when we use @property?
-
-# When Python sees @property, it creates a property object and attaches the getter method to it. When we use @property_name.setter, Python attaches the setter method to the same property object. Later, when we access or assign the attribute, Python automatically calls the appropriate method.
-
-
-# @property
-# ↓
-# Creates a Property Object
-
-# Property Object
-# ↓
-# Stores references to:
-# ✔ Getter
-# ✔ Setter
-# ✔ Deleter
-
-# It does NOT store the actual data.
-# The actual data is stored inside the object.
-
-
-# Interview Answer
+#💼 Interview Perspective
 
 # Agar interviewer pooche:
 
-# Does the property object contain the getter and setter functions?
+# Why do we need abstraction when we already have inheritance?
 
 # Simple answer:
 
-# The property object does not contain separate copies of the getter and setter code. It stores references to those functions and uses them when the property is accessed or modified.
+# Inheritance allows code reuse, but abstraction defines a common contract. It ensures that every child class provides its own implementation of required methods while hiding unnecessary implementation details from the user.  
 
 
+# pass ka matlab hai:"Method exist karta hai, lekin uske andar koi implementation nahi hai."
+
+# Agar ham inheritance use karte hain to Code softly run ho jayega but problem detect nahi hogi.Yehi abstraction ki sabse badi problem solve karta hai.Agar programmer override karna bhool gaya... program chal jayega.Koi error nahi.Aur bug baad me pata chalega.Isi problem ke liye Python me Abstract Class hai.
 
 
+class Animal:
+
+    def sound(self):
+        pass
 
 
+class Dog(Animal):
+    pass
 
-# ✅ Aaj Humne Kya Complete Kiya?
-# 1. @property ka purpose
-# Method ko attribute ki tarah access kar sakte hain.
-# Cleaner aur readable code.
-# 2. Getter aur Setter ki internal working
-# emp.salary
 
-# Internally:
+d = Dog()
 
-# Property Object
-#       ↓
-# Getter
-#       ↓
-# Local Memory
-#       ↓
-# Object Memory
-#       ↓
-# Return Value
-# 3. @salary.setter
-# emp.salary = 70000
+d.sound()
 
-# Internally:
+# Tumhari Reasoning Ko Interview Level Banate Hain
 
-# Property Object
-#       ↓
-# Setter
-#       ↓
-# Local Memory
-#       ↓
-# Object Memory Update
-# 4. Property Object
+# Agar interviewer pooche:
 
-# Ye aaj ka sabse important concept tha.
+# Why is this design bad?
 
-# Tumne samjha ki:
+# Tum aise answer de sakti ho:
 
-# ❌ Property object salary ki value store nahi karta.
+# This design is not good because the parent class provides an empty implementation using pass. If a child class forgets to override the method, the program still runs without any error. This can hide bugs. An abstract class solves this problem by forcing every child class to implement the required method.
 
-# ✅ Property object sirf getter, setter aur deleter ke references rakhta hai.
-
-# Actual data:
-
-# Employee Object
-
-# _Employee__salary = 50000
-# 5. Memory Model
-
-# Ab tumhare paas complete mental model hai.
-
-# Global Memory
-#       │
-#       ▼
-# Class Memory
-#       │
-#       ▼
-# Property Object
-#       │
-#       ▼
-# Getter / Setter References
-#       │
-#       ▼
-# Function Local Memory
-#       │
-#       ▼
-# Object Memory
