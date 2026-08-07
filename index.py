@@ -204,12 +204,12 @@ class Dog(Animal):
         print("Bark")
 
 
-class Cat(Animal):
-    pass
+# class Cat(Animal):
+    # pass
 
 
 d = Dog()
-c = Cat()
+# c = Cat()
 
 d.sound()
 
@@ -277,3 +277,50 @@ d.sound()
 # Correct answer:
 
 # Yes. Unlike some languages, Python allows abstract methods to contain implementation. Child classes must still override the method, but they can call the parent implementation using super() if they want to reuse common behavior.
+
+
+# @abstractmethod decorator method ke andar ek special attribute set karta hai.
+# Conceptually kuch aisa: sound.__isabstractmethod__ = True
+
+# @abstractmethod is a decorator that marks a method as abstract. It tells Python that the method must be implemented by every concrete subclass. During class creation, ABCMeta checks these abstract methods and prevents instantiation of any subclass that doesn't implement all of them.
+
+
+
+# Real companies me abstraction ka use zyada tar Payment Systems, Notification Systems, Authentication, File Processing, etc. me hota hai.
+
+class PaymentProcessor(ABC):
+
+    @abstractmethod
+    def process_payment(self, amount):
+        print("Logging Transaction...")
+
+# Ab rule ban gaya. Jo bhi PaymentProcessor inherit karega, usko process_payment() implement karna hi padega.
+
+class UPIProcessor(PaymentProcessor):
+
+    def process_payment(self, amount):
+        super().process_payment(amount)  # Call the parent implementation
+        print(f"Processing UPI payment of {amount}")
+
+class CardProcessor(PaymentProcessor):
+
+    def process_payment(self, amount):
+        super().process_payment(amount)  # Call the parent implementation
+        print(f"Processing card payment of {amount}")
+
+upi = UPIProcessor()
+upi.process_payment(1000)
+
+
+# 🎤 Interview Question
+
+# Interviewer:
+
+# Why do we use super() inside an abstract method implementation?
+
+# Strong answer:
+
+# We use super() to reuse common functionality defined in the parent abstract class, such as logging, validation, or auditing, while still allowing each child class to provide its own specific implementation. This avoids code duplication and improves maintainability.
+
+
+
