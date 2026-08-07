@@ -324,3 +324,72 @@ upi.process_payment(1000)
 
 
 
+
+# Abstract Class vs Interface
+
+# Python me Java jaisa alag interface keyword hi nahi hai. Abstract Class hi interface ka role bhi play kar sakti hai.
+
+# Agar is class me sirf abstract methods hain. To ye practically interface ki tarah behave kar rahi hai.
+
+class Payment(ABC):
+
+    @abstractmethod
+    def pay(self):
+        pass
+
+    @abstractmethod
+    def refund(self):
+        pass
+
+# lekin agar is class me kuch concrete methods bhi hain, to ye interface nahi hai. Ye ek abstract class hai jo kuch default behavior provide kar rahi hai.
+
+
+# Difference
+
+# Interface Style	    |     Abstract Class
+# Sirf contract  |	Contract + Common Code
+# Mostly abstract methods |	Abstract + Normal methods
+# Shared implementation nahi |	Shared implementation ho sakti hai
+
+
+# Interface Style: Sabko implement karna padega. Common code nahi.
+
+# Q. Does Python have interfaces?
+
+# Python does not have a separate interface keyword like Java. Instead, developers commonly use abstract base classes (ABC) with abstract methods to achieve interface-like behavior.
+
+# Duck typing in Python "If it walks like a duck and quacks like a duck, treat it as a duck."
+
+# Q. Why is Python called a Duck-Typed language?
+
+# Python focuses on an object's behavior rather than its type. If an object provides the required methods or attributes, it can be used regardless of its class hierarchy
+
+# Duck typing allows for more flexible and dynamic code, enabling polymorphism without strict type checking.
+# Duck typing ko type se matlab nahi hai. Usko behavior se matlab hai. Agar object me required methods hain, to usko use kar sakte hain, chahe wo kisi bhi class ka ho. agar Mere paas function hai aur function me koi bhi object pass kar sakte hain, bas us object me required methods honi chahiye. Agar object me required methods nahi hain, to runtime error aayega. Isliye Python ko Duck Typed Language kehte hain.agar hai to kaam ho jayega.
+
+# Duck Typing ka purpose hai:
+
+# Flexibility
+
+# Aur
+
+# Loose Coupling
+
+# Aur
+
+# Less Checking
+
+# Aur
+
+# Reusable Functions
+
+# Interview Definition
+
+# Duck Typing means Python focuses on what an object can do rather than what type it is. If an object provides the required methods or attributes, it can be used without belonging to a specific class hierarchy.
+
+
+# When would you use Duck Typing instead of an Abstract Class?
+
+# Strong answer:
+
+# If I need a strict contract and want to ensure every implementation follows the same interface, I use an abstract class. If I only care about behavior and want flexible, loosely coupled code that can work with any object providing the required methods, I use Duck Typing
