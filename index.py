@@ -1,395 +1,101 @@
-#Abstruction
+# isinstance()
 
-# Abstraction is the process of hiding unnecessary implementation details and exposing only the essential features to the user.
+# Ye Python ka ek built-in function hai.Iska kaam hai: Check karna ki koi object kisi particular class ka hai ya nahi.
 
-# Encapsulation vs Abstraction
+# Syntax:
 
-# Encapsulation   	                   Abstraction
-# Data ko protect karta hai	    Complexity ko hide karta hai
-# Focus on data	                Focus on behavior
-# private attributes        	Abstract classes / interfaces
-# Controlled access	            Simplified interface
+# isinstance(object, ClassName)
 
-#Bank class with abstraction    
-class bank:
-    name = "Bank of India"
+# Ye hamesha return karta hai:
 
-    def __init__(self, account_number, balance):
-        self.account_number = account_number
-        self.__balance = balance
+# True
+# False
 
-    def deposit(self, amount):
-        self.__balance += amount
-        print(f"Deposited {amount}. New balance: {self.__balance}")
-
-    def withdraw(self, amount):
-        if self.__balance >= amount:
-            self.__balance -= amount
-            print(f"Withdrew {amount}. New balance: {self.__balance}")
-        else:
-            print("Insufficient funds.")
-
-    @property
-    def get_balance(self):
-        return self.__balance
-
-bank_account = bank("123456789", 1000)
-bank_account.deposit(500)
-bank_account.withdraw(200)
-print(f"Final balance: {bank_account.get_balance}") 
-
-
-
-# Abstraction means hiding the implementation details and showing only the essential functionality to the user. It helps reduce complexity and allows users to focus on what an object does rather than how it works internally.
-
-# Example of Abstraction in Python:
-# Suppose hum Vehicle class bana rahe hain.
-
-class Vehicle:
-
-    def start(self):
-        pass
-
-# Humare paas ho sakte hain:
-
-# Car
-# Bike
-# Truck
-# Bus
-
-# Sabko start karna hai.
-# Lekin Car ka start alag.
-# Bike ka alag.
-# Truck ka alag.
-
-# Vehicle class ko start() method ka code likhna chahiye?
-# Jo bhi meri child class hogi, usko start() method implement karna hi padega.
-
-# Vehicle ko nahi pata Car ka engine kaise start hota hai.
-# Vehicle sirf rule banata hai.
-# "Har vehicle me start() hona chahiye."
-
-# Agar hum Vehicle class me start() method ka code likhenge, to Car ko start() method ko override karna padega. ham parent class ke methods ko inherit karte hain. Lekin neccessary nahi hai ki har child class ke liye parent class ke methods ka code same ho. Isliye hum start() method ko parent class me define karte hain, lekin uska implementation child class me karte hain.
-
-# Hame ye ensure karna hai ki har vehicle me start() method ho. Isliye hum start() method ko abstract method banate hain. Abstraction ka matlab hai ki hum implementation details ko hide karte hain aur sirf essential features ko expose karte hain. Not neccessary ke ham Bas ek dummy method chal rahe hai ye inheritance se hota hai isse ko ham avoid karte hai aur abstract method banate hai.
-
-# Agar parent class sirf rule define kar rahi hai, implementation nahi...To usko Abstract Class banao. Aur method ko bolo Child class, tumhe ye method likhna hi padega.
-
-#💼 Interview Perspective
-
-# Agar interviewer pooche:
-
-# Why do we need abstraction when we already have inheritance?
-
-# Simple answer:
-
-# Inheritance allows code reuse, but abstraction defines a common contract. It ensures that every child class provides its own implementation of required methods while hiding unnecessary implementation details from the user.  
-
-
-# pass ka matlab hai:"Method exist karta hai, lekin uske andar koi implementation nahi hai."
-
-# Agar ham inheritance use karte hain to Code softly run ho jayega but problem detect nahi hogi.Yehi abstraction ki sabse badi problem solve karta hai.Agar programmer override karna bhool gaya... program chal jayega.Koi error nahi.Aur bug baad me pata chalega.Isi problem ke liye Python me Abstract Class hai.
-
-
-# class Animal:
-
-#     def sound(self):
-#         pass
-
-
-# class Dog(Animal):
-#     pass
-
-
-# d = Dog()
-
-# d.sound()
-
-# Tumhari Reasoning Ko Interview Level Banate Hain
-
-# Agar interviewer pooche:
-
-# Why is this design bad?
-
-# Tum aise answer de sakti ho:
-
-# This design is not good because the parent class provides an empty implementation using pass. If a child class forgets to override the method, the program still runs without any error. This can hide bugs. An abstract class solves this problem by forcing every child class to implement the required method.
-
-#----------------------------------------------------------------------
-
-#Abstract Class
-from abc import ABC, abstractmethod
-
-class Animal(ABC):
-
-    @abstractmethod
-    def sound(self):
-        pass
-
-class Dog(Animal):
-    def sound(self):
-        return "Woof!"
+class Dog:
+    pass
 
 d = Dog()
-print(d.sound())  # Output: "Woof!"
 
+print(isinstance(d, Dog)) #True : Kyuki d Dog class ka object hai.
 
+class Dog:
+    pass
 
-# While regular inheritance allows you to reuse code, an abstract class is needed to enforce a strict blueprint and contract across subclasses. Standard inheritance passes down behavior but cannot guarantee that a child class will implement specific mandatory methods.
-
-from abc import ABC, abstractmethod
-
-# abc ka full form hai: Abstract Base Classes
-# Ye Python ka built-in module hai jo abstraction implement karne ke liye tools provide karta hai.
-# ABC ek normal Python class hai.Bas uska purpose special hai.
-
-class Animal(ABC): # Animal ABC ko inherit kar rahi hai.
-
-    @abstractmethod # Ye bhi ek decorator hai.
-    def sound(self):
-        pass
-
-# class Dog(Animal):
-#     pass
-
-# d = Dog() # Ye error dega kyunki Dog class ne sound() method ko implement nahi kiya hai.
-# Yaani object banne se pehle hi Python check karta hai.Isi wajah se bug turant pakad me aa jata hai. python check karega ke Is class me koi abstract methods abhi bhi implement hone baaki hain kya?
-
-class Dog(Animal):
-
-    def sound(self):
-        print("Bark")
+class Cat:
+    pass
 
 d = Dog()
-d.sound() # Output: Bark
 
+print(isinstance(d, Cat)) #False : Kyuki d Dog class ka object hai, Cat class ka nahi.
 
-# Class Memory
 
-# ABC Class
+#Ab Duck Typing Wala Example
 
-# ↓
+class Pen:
+    def write(self):
+        print("Writing")
 
-# Animal Class
 
-# ↓
+class Keyboard:
+    def write(self):
+        print("Typing")
 
-# sound Function
+# Agar kisi ko Duck Typing nahi pata ho, to wo aisa code likh sakta hai:
 
-# ↓
+def create_notes(device):
+    if isinstance(device, Pen):
+        device.write()
+    elif isinstance(device, Keyboard):
+        device.write()
+    else:
+        print("Device not supported")
 
-# Abstract Flag = True
+        # Dono cases me same kaam ho raha hai.
 
+    # Duck Typing kehta hai:
 
-# Q. What is an Abstract Class?
+def create_notes(device):
+    device.write()
 
-# An abstract class is a class that cannot be instantiated directly. It is used to define a common blueprint or contract for its child classes.
 
-# Q. What is an Abstract Method?
+class AIWriter:
+    def write(self):
+        print("AI is writing...")
 
-# An abstract method is a method declared using @abstractmethod that must be implemented by every concrete child class.
+# isinstance() wala code Ab tumhe function modify karna padega.
 
-from abc import ABC, abstractmethod
+def create_notes(device):
 
-class Animal(ABC):
+    if isinstance(device, Pen):
+        device.write()
 
-    @abstractmethod
-    def sound(self):
-        pass
+    elif isinstance(device, Keyboard):
+        device.write()
 
+    elif isinstance(device, AIWriter):
+        device.write()
 
-class Dog(Animal):
+# Har nayi class ke saath function badalna padega.
 
-    def sound(self):
-        print("Bark")
+# Duck Typing
 
+# Function me kuch bhi change nahi.
 
-# class Cat(Animal):
-    # pass
+# def create_notes(device):
+#     device.write()
 
+# Bas AIWriter me write() hona chahiye.
 
-d = Dog()
-# c = Cat()
+# Isliye Duck Typing code ko zyada flexible banata hai.
 
-d.sound()
 
-# 💼 Interview Improvement
-# Tumhara answer agar interview me dena ho to main ise thoda polish karunga:
 
-# An abstract class defines a contract for its child classes. By inheriting from ABC and using the @abstractmethod decorator, Python ensures that every concrete child class implements the required methods. If any abstract method remains unimplemented, Python raises a TypeError when an object of that class is created. This helps catch design mistakes early instead of allowing incomplete classes to run silently.
 
 
 
 
+# Interview Ke Liye Bas Itna Yaad Rakhna
 
+# isinstance():
 
-# Pehle Yaad Karo @property
-
-# Humne padha tha:
-
-# @property
-# def salary(self):
-#     ...
-
-# Internally (conceptually):
-
-# salary = property(salary)
-
-# Yaani Python ne ek naya Property Object bana diya.
-
-# Isliye salary ab function nahi raha.
-
-# Wo property object ban gaya.
-
-
-
-
-# @abstractmethod Yahan Python naya object nahi banata. Wo same function object ko modify karta hai. Technically function object hi return hota hai, lekin uske andar ek special information attach ho jati hai. Yaani function wahi hai, bas uspar ek sticker lag gaya
-
-# Function Object
-
-# Name : sound
-
-# Code : pass
-
-# Abstract Flag = True
-
-
-# Difference Between @property and @abstractmethod
-# @property	|  @abstractmethod
-# Function ko Property Object me wrap karta hai |	Function ko abstract mark karta hai
-# New property object create hota hai |	Function object hi rehta hai
-# Getter/Setter manage karta hai  |	Abstract flag/metadata attach karta hai
-# Attribute jaisa access deta hai |	Child ko implementation ke liye force karta hai
-
-
-# Q. What does @abstractmethod do internally?
-
-# @abstractmethod does not create a new property-like object. It marks the function as abstract by attaching metadata to it. Later, when Python creates an object of a child class, it checks whether all abstract methods have been implemented. If not, it raises a TypeError.
-
-
-# Interview Gold Question
-
-# Interviewer:
-
-# Can an abstract method have implementation in Python?
-
-# Correct answer:
-
-# Yes. Unlike some languages, Python allows abstract methods to contain implementation. Child classes must still override the method, but they can call the parent implementation using super() if they want to reuse common behavior.
-
-
-# @abstractmethod decorator method ke andar ek special attribute set karta hai.
-# Conceptually kuch aisa: sound.__isabstractmethod__ = True
-
-# @abstractmethod is a decorator that marks a method as abstract. It tells Python that the method must be implemented by every concrete subclass. During class creation, ABCMeta checks these abstract methods and prevents instantiation of any subclass that doesn't implement all of them.
-
-
-
-# Real companies me abstraction ka use zyada tar Payment Systems, Notification Systems, Authentication, File Processing, etc. me hota hai.
-
-class PaymentProcessor(ABC):
-
-    @abstractmethod
-    def process_payment(self, amount):
-        print("Logging Transaction...")
-
-# Ab rule ban gaya. Jo bhi PaymentProcessor inherit karega, usko process_payment() implement karna hi padega.
-
-class UPIProcessor(PaymentProcessor):
-
-    def process_payment(self, amount):
-        super().process_payment(amount)  # Call the parent implementation
-        print(f"Processing UPI payment of {amount}")
-
-class CardProcessor(PaymentProcessor):
-
-    def process_payment(self, amount):
-        super().process_payment(amount)  # Call the parent implementation
-        print(f"Processing card payment of {amount}")
-
-upi = UPIProcessor()
-upi.process_payment(1000)
-
-
-# 🎤 Interview Question
-
-# Interviewer:
-
-# Why do we use super() inside an abstract method implementation?
-
-# Strong answer:
-
-# We use super() to reuse common functionality defined in the parent abstract class, such as logging, validation, or auditing, while still allowing each child class to provide its own specific implementation. This avoids code duplication and improves maintainability.
-
-
-
-
-# Abstract Class vs Interface
-
-# Python me Java jaisa alag interface keyword hi nahi hai. Abstract Class hi interface ka role bhi play kar sakti hai.
-
-# Agar is class me sirf abstract methods hain. To ye practically interface ki tarah behave kar rahi hai.
-
-class Payment(ABC):
-
-    @abstractmethod
-    def pay(self):
-        pass
-
-    @abstractmethod
-    def refund(self):
-        pass
-
-# lekin agar is class me kuch concrete methods bhi hain, to ye interface nahi hai. Ye ek abstract class hai jo kuch default behavior provide kar rahi hai.
-
-
-# Difference
-
-# Interface Style	    |     Abstract Class
-# Sirf contract  |	Contract + Common Code
-# Mostly abstract methods |	Abstract + Normal methods
-# Shared implementation nahi |	Shared implementation ho sakti hai
-
-
-# Interface Style: Sabko implement karna padega. Common code nahi.
-
-# Q. Does Python have interfaces?
-
-# Python does not have a separate interface keyword like Java. Instead, developers commonly use abstract base classes (ABC) with abstract methods to achieve interface-like behavior.
-
-# Duck typing in Python "If it walks like a duck and quacks like a duck, treat it as a duck."
-
-# Q. Why is Python called a Duck-Typed language?
-
-# Python focuses on an object's behavior rather than its type. If an object provides the required methods or attributes, it can be used regardless of its class hierarchy
-
-# Duck typing allows for more flexible and dynamic code, enabling polymorphism without strict type checking.
-# Duck typing ko type se matlab nahi hai. Usko behavior se matlab hai. Agar object me required methods hain, to usko use kar sakte hain, chahe wo kisi bhi class ka ho. agar Mere paas function hai aur function me koi bhi object pass kar sakte hain, bas us object me required methods honi chahiye. Agar object me required methods nahi hain, to runtime error aayega. Isliye Python ko Duck Typed Language kehte hain.agar hai to kaam ho jayega.
-
-# Duck Typing ka purpose hai:
-
-# Flexibility
-
-# Aur
-
-# Loose Coupling
-
-# Aur
-
-# Less Checking
-
-# Aur
-
-# Reusable Functions
-
-# Interview Definition
-
-# Duck Typing means Python focuses on what an object can do rather than what type it is. If an object provides the required methods or attributes, it can be used without belonging to a specific class hierarchy.
-
-
-# When would you use Duck Typing instead of an Abstract Class?
-
-# Strong answer:
-
-# If I need a strict contract and want to ensure every implementation follows the same interface, I use an abstract class. If I only care about behavior and want flexible, loosely coupled code that can work with any object providing the required methods, I use Duck Typing
+# Checks whether an object is an instance of a particular class (or its subclasses). It returns True or False.
