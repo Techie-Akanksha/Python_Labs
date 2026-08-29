@@ -1,45 +1,32 @@
-#1. Write a program that asks the user for a number and prints whether it is even or odd. 
-number = int(input("Please enter a number: "))
-if number % 2 == 0:
-    print(f"{number} is even.")
-else:
-    print(f"{number} is odd.")
+#Invoice Generator
+
+# Customer Name: John Doe
+# Invoice Number: INV-1001
+# products and services name
+# Quantity
+# price per item
 
 
-#2. Simple Calculator
-first_number = float(input("Enter the first number: "))
-operator = input("Enter an operator (+, -, *, /): ")
-second_number = float(input("Enter the second number: "))
-result = 0
-def calculate(first_number, operator, second_number):
-    if operator == '+':
-        result = first_number + second_number
-        return result
-    elif operator == '-':
-        result = first_number - second_number
-        return result
-    elif operator == '*':
-        result = first_number * second_number
-        return result   
-    elif operator == '/':
-        if second_number != 0:
-            result = first_number // second_number
-            return result   
-        else:
-            return "Error: Division by zero."
-    else:
-        return "Error: Invalid operator."
+Customer_Name = input("Enter Customer Name: ")
+Invoice_Number = input("Enter Invoice Number: ")
+Pro_Service_name = input("Enter Prodcts and Service Name: ")
+Quantity = int(input("Enter Quantity: "))
+Price =  int(input("Enter Price per Item: "))
 
-result = calculate(first_number, operator, second_number)
-print(f"The result is: {result}")
+Subtotal = Quantity * Price 
+print("="*75)
+print("                         INVOICE GENERATOR                         ")
+print("="*75)
+print()
+print(f"Invoice Number: {Invoice_Number}")
+print(f"Customer: {Customer_Name}")
+print()
 
-#3. FizzBuzz : Print numbers from 1 to 100.
-for i in range(1, 101):
-    if i % 3 == 0 and i % 5 == 0:
-        print("FizzBuzz")
-    elif i % 3 == 0:
-        print("Fizz")
-    elif i % 5 == 0:
-        print("Buzz")
-    else:
-        print(i)
+
+print(f"{'Item':<20}{'Qty':>5}{'Price':>10}{'Total':>10}") 
+print("-" * 45) 
+print(f"{Pro_Service_name:<20}{Quantity:>5}{Price:>10}{Subtotal:>10}") 
+print() 
+print("-" * 45) 
+print(f"{'Subtotal:':>35} ₹{Subtotal}") 
+print("=" * 45)
