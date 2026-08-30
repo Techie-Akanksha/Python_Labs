@@ -1,32 +1,80 @@
-#Invoice Generator
-
-# Customer Name: John Doe
-# Invoice Number: INV-1001
-# products and services name
-# Quantity
-# price per item
+#EXPENSE TRACKER
 
 
-Customer_Name = input("Enter Customer Name: ")
-Invoice_Number = input("Enter Invoice Number: ")
-Pro_Service_name = input("Enter Prodcts and Service Name: ")
-Quantity = int(input("Enter Quantity: "))
-Price =  int(input("Enter Price per Item: "))
 
-Subtotal = Quantity * Price 
+
 print("="*75)
-print("                         INVOICE GENERATOR                         ")
+print("                         PASSWORD MANAGER                         ")
 print("="*75)
 print()
-print(f"Invoice Number: {Invoice_Number}")
-print(f"Customer: {Customer_Name}")
-print()
+
+accounts = []
+
+def add_acc():
+    print("Adding account...")
+    website = input("Enter your website: ")
+    username = input("Enter your username: ")
+    password = input("Enter your password: ")
+    account = {
+        "website": website,
+        "username": username,
+        "password": password
+    }
+    accounts.append(account)
+    print("Account added successfully!")
+
+def view_acc():
+    print("Showing account...")
+    for account in accounts:
+        print(account)
 
 
-print(f"{'Item':<20}{'Qty':>5}{'Price':>10}{'Total':>10}") 
-print("-" * 45) 
-print(f"{Pro_Service_name:<20}{Quantity:>5}{Price:>10}{Subtotal:>10}") 
-print() 
-print("-" * 45) 
-print(f"{'Subtotal:':>35} ₹{Subtotal}") 
-print("=" * 45)
+def search_acc():
+    print("Searching account...")
+def gen_pass():
+    print("Generating password...")
+def upd_pass():
+    print("Updating password...")
+def del_acc():
+    print("Deleting account...")
+def goodbye():
+    print("Goodbye!")
+
+
+
+
+while True:
+
+    print("1. Add account") 
+    print("2. View accounts") 
+    print("3. Search account") 
+    print("4. Generate password") 
+    print("5. Update password") 
+    print("6. Delete account") 
+    print("7. Exit") 
+
+    response = int(input("Enter your action: "))
+
+    if response == 1:
+        add_acc()
+
+    elif response == 2:
+        view_acc()
+
+    elif response == 3:
+        search_acc()
+
+    elif response == 4:
+        gen_pass()
+
+    elif response == 5:
+        upd_pass()
+
+    elif response == 6:
+        del_acc()
+
+    elif response == 7:
+        goodbye()
+        break
+    else:
+        print("Invalid Action")
