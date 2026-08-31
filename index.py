@@ -1,36 +1,46 @@
 import random
 import string
-#EXPENSE TRACKER
 
-print("="*75)
-print("                         PASSWORD MANAGER                         ")
-print("="*75)
+
+# PASSWORD MANAGER
+
+print("=" * 75)
+print("                         PASSWORD MANAGER")
+print("=" * 75)
 print()
+
 
 accounts = []
 
+
 def add_acc():
     print("Adding account...")
+
     website = input("Enter your website: ")
     username = input("Enter your username: ")
     password = input("Enter your password: ")
+
     account = {
         "website": website,
         "username": username,
         "password": password
     }
+
     accounts.append(account)
+
     print("Account added successfully!")
     print()
 
+
 def view_acc():
-    print("Showing account...")
+    print("Showing accounts...")
+
     if len(accounts) == 0:
-        print("No accounts found")
+        print("No accounts found.")
         print()
         return
 
-    # The enumerate() function in Python is a built-in tool that adds a counter to an iterable (like a list, tuple, or string) and returns it as an enumerate object. It is primarily used in loops to track both the index and the value of items simultaneously without managing a manual counter variable
+    # enumerate() gives us the account number and account data
     for i, account in enumerate(accounts, start=1):
         print("Account", i)
         print("Website:", account["website"])
@@ -41,7 +51,14 @@ def view_acc():
 
 def search_acc():
     print("Searching account...")
+
+    if len(accounts) == 0:
+        print("No accounts found.")
+        print()
+        return
+
     search = input("Enter website to search: ")
+
     found = False
 
     for account in accounts:
@@ -49,33 +66,49 @@ def search_acc():
             print("Website:", account["website"])
             print("Username:", account["username"])
             print("Password:", account["password"])
+            print()
+
             found = True
 
     if found == False:
-            print("Website Not found!")
+        print("Website not found!")
 
 
 def gen_pass():
     print("Generating password...")
 
-    length = int(input("Enter password length: "))
+    while True:
+        try:
+            length = int(input("Enter password length: "))
 
-    while length < 8:
-        print("Password length must be at least 8 characters.")
-        length = int(input("Enter password length: "))
+            if length < 8:
+                print("Password length must be at least 8 characters.")
+                continue
 
-    characters = string.ascii_letters + string.digits + string.punctuation
+            break
+
+        except ValueError:
+            print("Please enter a valid number.")
+
+    characters = (
+        string.ascii_letters
+        + string.digits
+        + string.punctuation
+    )
 
     password = ""
 
+    # Guarantee at least one of each character type
     password += random.choice(string.ascii_lowercase)
     password += random.choice(string.ascii_uppercase)
     password += random.choice(string.digits)
     password += random.choice(string.punctuation)
 
+    # Fill the remaining characters
     for i in range(length - 4):
         password += random.choice(characters)
 
+    # Shuffle the password
     password = list(password)
     random.shuffle(password)
     password = "".join(password)
@@ -88,6 +121,11 @@ def gen_pass():
 def upd_pass():
     print("Updating password...")
 
+    if len(accounts) == 0:
+        print("No accounts found.")
+        print()
+        return
+
     website = input("Enter website to update: ")
 
     found = False
@@ -99,17 +137,24 @@ def upd_pass():
             print("1. Enter password manually")
             print("2. Generate password")
 
-            choice = int(input("Choose an option: "))
+            while True:
+                try:
+                    choice = int(input("Choose an option: "))
+
+                    if choice not in [1, 2]:
+                        print("Please choose 1 or 2.")
+                        continue
+
+                    break
+
+                except ValueError:
+                    print("Please enter a valid number.")
 
             if choice == 1:
                 new_password = input("Enter new password: ")
 
             elif choice == 2:
                 new_password = gen_pass()
-
-            else:
-                print("Invalid option!")
-                return
 
             account["password"] = new_password
 
@@ -122,27 +167,61 @@ def upd_pass():
         print("Website not found!")
 
 
-
-
 def del_acc():
     print("Deleting account...")
+
+    if len(accounts) == 0:
+        print("No accounts found.")
+        print()
+        return
+
+    website = input("Enter website to delete: ")
+
+    found = False
+
+    for account in accounts:
+        if account["website"].lower() == website.lower():
+            print("Account found!")
+
+            confirm = input(
+                "Are you sure you want to delete this account? (y/n): "
+            )
+
+            if confirm.lower() == "y":
+                accounts.remove(account)
+                print("Account deleted successfully!")
+
+            else:
+                print("Deletion cancelled.")
+
+            found = True
+            break
+
+    if found == False:
+        print("Website not found!")
+
+
 def goodbye():
     print("Goodbye!")
 
 
-
-
 while True:
 
-    print("1. Add account") 
-    print("2. View accounts") 
-    print("3. Search account") 
-    print("4. Generate password") 
-    print("5. Update password") 
-    print("6. Delete account") 
-    print("7. Exit") 
+    print("1. Add account")
+    print("2. View accounts")
+    print("3. Search account")
+    print("4. Generate password")
+    print("5. Update password")
+    print("6. Delete account")
+    print("7. Exit")
 
-    response = int(input("Enter your action: "))
+    try:
+        response = int(input("Enter your action: "))
+
+    except ValueError:
+        print("Please enter a number.")
+        print()
+        continue
 
     if response == 1:
         add_acc()
@@ -165,5 +244,9 @@ while True:
     elif response == 7:
         goodbye()
         break
+
     else:
         print("Invalid Action")
+
+    print()
+
