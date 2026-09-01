@@ -113,6 +113,16 @@ def gen_pass():
     random.shuffle(password)
     password = "".join(password)
 
+    # website = input("Enter website for this password: ")
+    # for account in accounts:
+    #     if account["website"].lower() == website.lower():
+    #             account["password"] = password
+    #             print("Password updated for", website)
+    #             break
+    #     else:
+    #         print("No account found for", website)
+    #         print("You can add this password to a new account.")
+
     print("Generated password:", password)
 
     return password
