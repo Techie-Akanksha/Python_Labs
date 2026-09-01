@@ -1,45 +1,14 @@
 import random
+import string
 
-print("Welcome to the Number Guessing Game!")
-print("I'm thinking of a number between 1 and 100.")
+def generate_random_string(length):
 
-secret_number = random.randint(1, 100)
-count = 0
-max_attempts = 7
-won = False
+    characters = string.ascii_letters + string.digits + string.punctuation
 
-while count < max_attempts:
+    password = ''.join(random.choice(characters) for i in range(length))
 
-    # Get a valid number from the user
-    while True:
-        try:
-            guess = int(input("Take a guess: "))
+    return password
 
-            if guess < 1 or guess > 100:
-                print("Please enter a number between 1 and 100.")
-                continue
+length = int(input("Enter the length of password : "))
 
-            break
-
-        except ValueError:
-            print("Please enter a valid number.")
-
-    # Count only valid guesses
-    count += 1
-
-    if guess < secret_number:
-        print("Too low! Try again.")
-
-    elif guess > secret_number:
-        print("Too high! Try again.")
-
-    else:
-        print(f"Congratulations! You've guessed the number {secret_number} correctly!")
-        print(f"It took you {count} guesses.")
-        won = True
-        break
-
-# Player didn't win
-if not won:
-    print("Sorry! You've run out of attempts.")
-    print(f"The number was {secret_number}.")
+print(f"Generated random Password: {generate_random_string(length)}")
