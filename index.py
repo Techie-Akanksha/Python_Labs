@@ -1,14 +1,43 @@
 import random
-import string
 
-def generate_random_string(length):
+choices = ["rock", "paper", "scissors"]
 
-    characters = string.ascii_letters + string.digits + string.punctuation
+player_score = 0
+computer_score = 0
 
-    password = ''.join(random.choice(characters) for i in range(length))
+print("🎮 Rock, Paper, Scissors Game!")
 
-    return password
+while True:
+    player = input("\nEnter rock, paper, or scissors (or 'quit' to exit): ").lower().strip()
 
-length = int(input("Enter the length of password : "))
+    if player == "quit":
+        break
 
-print(f"Generated random Password: {generate_random_string(length)}")
+    if player not in choices:
+        print("❌ Invalid choice! Please enter rock, paper, or scissors.")
+        continue
+
+    computer = random.choice(choices)
+
+    print("You chose:", player)
+    print("Computer chose:", computer)
+
+    if player == computer:
+        print("🤝 It's a tie!")
+
+    elif (
+        (player == "rock" and computer == "scissors")
+        or (player == "paper" and computer == "rock")
+        or (player == "scissors" and computer == "paper")
+    ):
+        print("🎉 You win!")
+        player_score += 1
+
+    else:
+        print("😢 You lose!")
+        computer_score += 1
+
+    print(f"Score → You: {player_score} | Computer: {computer_score}")
+
+print("\nGame Over!")
+print(f"Final Score → You: {player_score} | Computer: {computer_score}")
