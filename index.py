@@ -1,43 +1,72 @@
 import random
 
-choices = ["rock", "paper", "scissors"]
+print("Rock Paper Scissors Game")
+print("--" * 20)
+print()
 
-player_score = 0
-computer_score = 0
 
-print("🎮 Rock, Paper, Scissors Game!")
+class Player:
+    def __init__(self, name):
+        self.name = name
+        self.choice = None
+        self.score = 0
 
-while True:
-    player = input("\nEnter rock, paper, or scissors (or 'quit' to exit): ").lower().strip()
+    def make_choice(self):
+        self.choice = input(
+            f"{self.name}, enter rock, paper, or scissors: "
+        ).lower()
 
-    if player == "quit":
-        break
 
-    if player not in choices:
-        print("❌ Invalid choice! Please enter rock, paper, or scissors.")
-        continue
+class Computer(Player):
+    def make_choice(self):
+        self.choice = random.choice(
+            ["rock", "paper", "scissors"]
+        )
 
-    computer = random.choice(choices)
 
-    print("You chose:", player)
-    print("Computer chose:", computer)
+class Game:
+    def __init__(self, player, computer):
+        self.player = player
+        self.computer = computer
 
-    if player == computer:
-        print("🤝 It's a tie!")
+    def decide_winner(self):
 
-    elif (
-        (player == "rock" and computer == "scissors")
-        or (player == "paper" and computer == "rock")
-        or (player == "scissors" and computer == "paper")
-    ):
-        print("🎉 You win!")
-        player_score += 1
+        if self.player.choice == self.computer.choice:
+            print("It's a tie!")
 
-    else:
-        print("😢 You lose!")
-        computer_score += 1
+        elif (
+            (self.player.choice == "rock" and self.computer.choice == "scissors")
+            or
+            (self.player.choice == "paper" and self.computer.choice == "rock")
+            or
+            (self.player.choice == "scissors" and self.computer.choice == "paper")
+        ):
+            print("You win!")
+            self.player.score += 1
 
-    print(f"Score → You: {player_score} | Computer: {computer_score}")
+        else:
+            print("Computer wins!")
+            self.computer.score += 1
 
-print("\nGame Over!")
-print(f"Final Score → You: {player_score} | Computer: {computer_score}")
+
+# Create objects
+player = Player("Player")
+computer = Computer("Computer")
+game = Game(player, computer)
+
+# Make choices
+player.make_choice()
+computer.make_choice()
+
+# Show choices
+print()
+print(f"{player.name} chose: {player.choice}")
+print(f"{computer.name} chose: {computer.choice}")
+
+# Decide winner
+game.decide_winner()
+
+# Show scores
+print()
+print(f"{player.name} score: {player.score}")
+print(f"{computer.name} score: {computer.score}")
