@@ -1,55 +1,89 @@
-class BankAccount:
+import json
+from pathlib import Path
+from abc import ABC, abstractmethod 
 
-    bank_name = "ABC Bank"
+database = "school_database.json"
+data = {"students": [], "teachers": []}
 
-    def __init__(self, owner, balance):
-        self.owner = owner
-        self._balance = balance
+if Path(database).exists():
+    with open(database, "r") as file:
+        content = file.read()
+        if content:
+            data = json.loads(content)
 
-    @property
-    def balance(self):
-        return self._balance
+def save_data():
+    with open(database, "w") as file:
+        json.dump(data, file, indent=4)
 
-    @balance.setter
-    def balance(self, amount):
-        if amount < 0:
-            raise ValueError("Balance cannot be negative")
+class Registration(ABC):
+    @abstractmethod
+    def get_roles(self):
+        pass
 
-        self._balance = amount
+    @abstractmethod
+    def register(self):
+        pass
 
-    def deposit(self, amount):
-        if amount <= 0:
-            raise ValueError("Amount must be positive")
-
-        self._balance += amount
-
-    def withdraw(self, amount):
-        if amount <= 0:
-            raise ValueError("Amount must be positive")
-
-        if amount > self._balance:
-            raise ValueError("Insufficient balance")
-
-        self._balance -= amount
-
-    @classmethod
-    def from_string(cls, data):
-        name, balance = data.split(",")
-        return cls(name, float(balance))
+    @abstractmethod
+    def show_details(self):
+        pass
 
     @staticmethod
-    def validate_account_number(number):
-        return len(number) == 10 and number.isdigit()
+    def validate_email(email):
+        return "@" in email and "." in email
 
+class Student(Registration):
+    def get_roles(self):
+        return "Student"
 
-account = BankAccount("Rahul", 5000)
+    def register(self):
+        name = input("Enter student name: ")
+        age = int(input("Enter student age: "))
+        email = input("Enter student email: ")
+        roll_no = input("Enter student roll number: ")
 
-account.deposit(1000)
-account.withdraw(500)
+        if not Registration.validate_email(email):
+            print("Invalid email format.")
+            return
 
-print(account.owner)
-print(account.balance)
+        for i in data["students"]:
+            if i["roll_no"] == roll_no:
+                print("Student with this roll number already exists.")
+                return
+        
 
-print(
-    BankAccount.validate_account_number("1234567890")
-)
+        student_data = {
+            "name": name, 
+            "age": age,
+            "email": email,
+            "roll_no": roll_no,
+            "grades": {}
+        }
+        data["students"].append(student_data)
+        save_data()
+        print("Student registered successfully.")
+
+    def show_details(self):
+        # roll_no = input("Enter student roll number: ")
+        # for student in data["students"]:
+        #     if student["roll_no"] == roll_no:
+        #         print(f"Name: {student['name']}")
+        #         print(f"Age: {student['age']}")
+        #         print(f"Email: {student['email']}")
+        #         print(f"Roll Number: {student['roll_no']}")
+        #         print(f"Grades: {student['grades']}")
+        #         return
+        # print("Student not found.")
+        pass
+
+print("press 1 to register a student")
+print("press 2 to register a teacher")
+print("press 3 to add grades")
+print("press 4 to show a student details")
+print("press 5 to show a teachers details")
+
+choice =  int(input("Enter your choice:- "))
+
+if choice == 1:
+    student = Student()
+    student.register()
