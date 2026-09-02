@@ -1,72 +1,55 @@
-import random
+class BankAccount:
 
-print("Rock Paper Scissors Game")
-print("--" * 20)
-print()
+    bank_name = "ABC Bank"
 
+    def __init__(self, owner, balance):
+        self.owner = owner
+        self._balance = balance
 
-class Player:
-    def __init__(self, name):
-        self.name = name
-        self.choice = None
-        self.score = 0
+    @property
+    def balance(self):
+        return self._balance
 
-    def make_choice(self):
-        self.choice = input(
-            f"{self.name}, enter rock, paper, or scissors: "
-        ).lower()
+    @balance.setter
+    def balance(self, amount):
+        if amount < 0:
+            raise ValueError("Balance cannot be negative")
 
+        self._balance = amount
 
-class Computer(Player):
-    def make_choice(self):
-        self.choice = random.choice(
-            ["rock", "paper", "scissors"]
-        )
+    def deposit(self, amount):
+        if amount <= 0:
+            raise ValueError("Amount must be positive")
 
+        self._balance += amount
 
-class Game:
-    def __init__(self, player, computer):
-        self.player = player
-        self.computer = computer
+    def withdraw(self, amount):
+        if amount <= 0:
+            raise ValueError("Amount must be positive")
 
-    def decide_winner(self):
+        if amount > self._balance:
+            raise ValueError("Insufficient balance")
 
-        if self.player.choice == self.computer.choice:
-            print("It's a tie!")
+        self._balance -= amount
 
-        elif (
-            (self.player.choice == "rock" and self.computer.choice == "scissors")
-            or
-            (self.player.choice == "paper" and self.computer.choice == "rock")
-            or
-            (self.player.choice == "scissors" and self.computer.choice == "paper")
-        ):
-            print("You win!")
-            self.player.score += 1
+    @classmethod
+    def from_string(cls, data):
+        name, balance = data.split(",")
+        return cls(name, float(balance))
 
-        else:
-            print("Computer wins!")
-            self.computer.score += 1
+    @staticmethod
+    def validate_account_number(number):
+        return len(number) == 10 and number.isdigit()
 
 
-# Create objects
-player = Player("Player")
-computer = Computer("Computer")
-game = Game(player, computer)
+account = BankAccount("Rahul", 5000)
 
-# Make choices
-player.make_choice()
-computer.make_choice()
+account.deposit(1000)
+account.withdraw(500)
 
-# Show choices
-print()
-print(f"{player.name} chose: {player.choice}")
-print(f"{computer.name} chose: {computer.choice}")
+print(account.owner)
+print(account.balance)
 
-# Decide winner
-game.decide_winner()
-
-# Show scores
-print()
-print(f"{player.name} score: {player.score}")
-print(f"{computer.name} score: {computer.score}")
+print(
+    BankAccount.validate_account_number("1234567890")
+)
