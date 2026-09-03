@@ -1,32 +1,35 @@
-#Invoice Generator
+questions = [
+    {
+        "question": "What is the capital of India?",
+        "options": ["Mumbai", "Delhi", "Kolkata", "Chennai"],
+        "answer": "Delhi"
+    },
+    {
+        "question": "Which language are we learning?",
+        "options": ["Python", "Java", "C++", "HTML"],
+        "answer": "Python"
+    },
+    {
+        "question": "What is 5 + 3?",
+        "options": ["6", "7", "8", "9"],
+        "answer": "8"
+    }
+]
 
-# Customer Name: John Doe
-# Invoice Number: INV-1001
-# products and services name
-# Quantity
-# price per item
+score = 0
 
+for question in questions:
+    print(question["question"])
 
-Customer_Name = input("Enter Customer Name: ")
-Invoice_Number = input("Enter Invoice Number: ")
-Pro_Service_name = input("Enter Prodcts and Service Name: ")
-Quantity = int(input("Enter Quantity: "))
-Price =  int(input("Enter Price per Item: "))
+    for option in question["options"]:
+        print(option)
 
-Subtotal = Quantity * Price 
-print("="*75)
-print("                         INVOICE GENERATOR                         ")
-print("="*75)
-print()
-print(f"Invoice Number: {Invoice_Number}")
-print(f"Customer: {Customer_Name}")
-print()
+    user_answer = input("Your answer: ")
 
+    if user_answer.lower() == question["answer"].lower():
+        print("Correct!")
+        score += 1
+    else:
+        print("Wrong!")
 
-print(f"{'Item':<20}{'Qty':>5}{'Price':>10}{'Total':>10}") 
-print("-" * 45) 
-print(f"{Pro_Service_name:<20}{Quantity:>5}{Price:>10}{Subtotal:>10}") 
-print() 
-print("-" * 45) 
-print(f"{'Subtotal:':>35} ₹{Subtotal}") 
-print("=" * 45)
+print("Your score:", score, "/", len(questions))
