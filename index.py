@@ -1,9 +1,9 @@
-import json
 from pathlib import Path
-from abc import ABC, abstractmethod 
+from abc import ABC, abstractmethod
+import json 
 
-database = "school_database.json"
-data = {"students": [], "teachers": []}
+database = "database.json"
+data = {"students": [], "teachers":[]}
 
 if Path(database).exists():
     with open(database, "r") as file:
@@ -12,7 +12,7 @@ if Path(database).exists():
             data = json.loads(content)
 
 def save_data():
-    with open(database, "w") as file:
+    with open(database,"w") as file:
         json.dump(data, file, indent=4)
 
 class Registration(ABC):
@@ -20,7 +20,7 @@ class Registration(ABC):
     def get_roles(self):
         pass
 
-    @abstractmethod
+    @abstractmethod 
     def register(self):
         pass
 
@@ -32,7 +32,7 @@ class Registration(ABC):
     def validate_email(email):
         return "@" in email and "." in email
 
-class Student(Registration):
+class student(Registration):
     def get_roles(self):
         return "Student"
 
@@ -40,20 +40,18 @@ class Student(Registration):
         name = input("Enter student name: ")
         age = int(input("Enter student age: "))
         email = input("Enter student email: ")
-        roll_no = input("Enter student roll number: ")
-
         if not Registration.validate_email(email):
             print("Invalid email format.")
             return
+        roll_no = input("Enter student roll number: ")
 
         for i in data["students"]:
             if i["roll_no"] == roll_no:
                 print("Student with this roll number already exists.")
                 return
-        
 
-        student_data = {
-            "name": name, 
+        student_data ={
+            "name": name,
             "age": age,
             "email": email,
             "roll_no": roll_no,
@@ -64,26 +62,87 @@ class Student(Registration):
         print("Student registered successfully.")
 
     def show_details(self):
-        # roll_no = input("Enter student roll number: ")
-        # for student in data["students"]:
-        #     if student["roll_no"] == roll_no:
-        #         print(f"Name: {student['name']}")
-        #         print(f"Age: {student['age']}")
-        #         print(f"Email: {student['email']}")
-        #         print(f"Roll Number: {student['roll_no']}")
-        #         print(f"Grades: {student['grades']}")
-        #         return
-        # print("Student not found.")
-        pass
+        roll_no = input("Enter student roll number: ")
+        for i in data["students"]:
+            if i["roll_no"] == roll_no:
+                print(f"Name: {i['name']}")
+                print(f"Age: {i['age']}")
+                print(f"Email: {i['email']}")
+                print(f"Roll Number: {i['roll_no']}")
+                print(f"Grades: {i['grades']}")
+                return
+        print("Student not found.")
 
-print("press 1 to register a student")
-print("press 2 to register a teacher")
-print("press 3 to add grades")
-print("press 4 to show a student details")
-print("press 5 to show a teachers details")
+    def update_grades(self):
+        roll_no = input("Enter student roll number: ")
+        for i in data["students"]:
+            if i["roll_no"] == roll_no:
+                subject = input("Enter subject name: ")
+                grade = float(input("Enter grade: "))
+                i["grades"][subject] = grade
+                save_data()
+                print("Grade updated successfully.")
+                return
+        print("Student not found.")
 
-choice =  int(input("Enter your choice:- "))
+class teacher(Registration):
+    def get_roles(self):
+        return "Teacher"
 
+    def register(self):
+        name = input("Enter teacher name: ")
+        subject = input("Enter teacher subject: ")
+        email = input("Enter teacher email: ")
+        if not Registration.validate_email(email):
+            print("Invalid email format.")
+            return
+
+        roll_no = input("Enter teacher roll number: ")
+        for i in data["teachers"]:
+            if i["roll_no"] == roll_no:
+                print("Teacher with this roll number already exists.")
+                return
+
+        teacher_data = {
+            "name": name,
+            "subject": subject,
+            "email": email,
+            "roll_no": roll_no
+        }
+        data["teachers"].append(teacher_data)
+        save_data()
+        print("Teacher registered successfully.")
+
+    def show_details(self):
+        roll_no = input("Enter teacher roll number: ")
+        for i in data["teachers"]:
+            if i["roll_no"] == roll_no:
+                print(f"Name: {i['name']}")
+                print(f"Subject: {i['subject']}")
+                print(f"Email: {i['email']}")
+                print(f"Roll Number: {i['roll_no']}")
+                return
+        print("Teacher not found.")
+
+print("press 1 to register as a student")
+print("press 2 to register as a teacher")   
+print("press 3 to update grades of a student")
+print("press 4 to view details of a student")
+print("press 5 to view details of a teacher")
+
+choice = int(input("Enter your choice: "))
+student = student()
+teacher = teacher()
 if choice == 1:
-    student = Student()
     student.register()
+
+elif choice == 2:
+    teacher.register()
+elif choice == 3:
+    student.update_grades()
+elif choice == 4:
+    student.show_details()
+elif choice == 5:
+    teacher.show_details()
+else:
+    print("Invalid choice. Please select a valid option.")
