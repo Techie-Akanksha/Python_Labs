@@ -1,148 +1,155 @@
-from pathlib import Path
+import json
 from abc import ABC, abstractmethod
-import json 
+from pathlib import Path
 
-database = "database.json"
-data = {"students": [], "teachers":[]}
+hospital_data = "hospital_data.json"
+data = {"patients":[], "doctors":[]}
 
-if Path(database).exists():
-    with open(database, "r") as file:
-        content = file.read()
+if Path(hospital_data).exists():
+    with open("hospital_data","r") as f:
+        content = f.read()
         if content:
             data = json.loads(content)
 
-def save_data():
-    with open(database,"w") as file:
-        json.dump(data, file, indent=4)
+def save():
+    with open("hospital_data","w") as f:
+        json.dump(data, f, indent=4)
 
-class Registration(ABC):
+class Person:  
     @abstractmethod
-    def get_roles(self):
+    def get_role(self):
         pass
 
-    @abstractmethod 
-    def register(self):
+    @abstractmethod
+    def details(self):
         pass
 
     @abstractmethod
     def show_details(self):
+        pass
+
+    @abstractmethod
+    def search_details(self):
         pass
 
     @staticmethod
     def validate_email(email):
         return "@" in email and "." in email
 
-class student(Registration):
-    def get_roles(self):
-        return "Student"
+    @staticmethod
+    def validate_mob(mob):
+        return (
+            len(mob) == 10 
+            and mob.isdigit()
+            and mob[0] in "6789"
+        )
 
-    def register(self):
-        name = input("Enter student name: ")
-        age = int(input("Enter student age: "))
-        email = input("Enter student email: ")
-        if not Registration.validate_email(email):
-            print("Invalid email format.")
-            return
-        roll_no = input("Enter student roll number: ")
+class Patient(Person):
+    def get_role(self):
+        return "Patient"
 
-        for i in data["students"]:
-            if i["roll_no"] == roll_no:
-                print("Student with this roll number already exists.")
+    def details(self):
+        id = int(input("Enter patient ID:- "))
+        for i in data["patients"]:
+            if i["id"] == id:
+                print("Patient with this patient ID already exists")
                 return
 
-        student_data ={
-            "name": name,
+        name = input("Enter patients name:- ")
+        try:
+            age = int(input("Enter patients age:- "))
+        except ValueError:
+            print("Please enter valid age")
+
+        gender = input("Enter patient gender:- ")
+        if gender.lower() not in ("male", "female","other"):
+            print("Please enter gender again!")
+
+        phone = int(input("Enter patient phone no:- "))
+        if not Person.validate_mob(phone):
+            print("Invalid phone number format.")
+            return
+
+        email = input("Enter patient Email:- ")
+        if not Person.validate_email(email):
+            print("Invalid email format.")
+            return
+
+        blood_grp = input("Enter patient blood group:- ")
+        address = input("Enter patients address:- ")
+        medical_history = input("Enter patients medical history:- ")
+
+        patients_data = {
+            "id": id,
+            "name" : name,
             "age": age,
+            "gender": gender,
+            "phone": phone,
             "email": email,
-            "roll_no": roll_no,
-            "grades": {}
+            "blood_grp": blood_grp,
+            "address": address,
+            "medical_history": medical_history
         }
-        data["students"].append(student_data)
-        save_data()
-        print("Student registered successfully.")
+        data["patients"].append(patients_data)
+        save()
+        print("Patients details saved successfully!")
 
     def show_details(self):
-        roll_no = input("Enter student roll number: ")
-        for i in data["students"]:
-            if i["roll_no"] == roll_no:
-                print(f"Name: {i['name']}")
-                print(f"Age: {i['age']}")
-                print(f"Email: {i['email']}")
-                print(f"Roll Number: {i['roll_no']}")
-                print(f"Grades: {i['grades']}")
+       pass
+
+    def search_details(self):
+        pass
+
+    def update_details(self):
+        pass
+
+    def delete_details(self):
+        pass
+
+class Doctor(Person):
+    def get_role(self):
+        return "Patient"
+
+    def details(self):
+        id = int(input("Enter Doctor ID:- "))
+        for i in data["doctors"]:
+            if i["id"] == id:
+                print("Doctor with this patient ID already exists")
                 return
-        print("Student not found.")
 
-    def update_grades(self):
-        roll_no = input("Enter student roll number: ")
-        for i in data["students"]:
-            if i["roll_no"] == roll_no:
-                subject = input("Enter subject name: ")
-                grade = float(input("Enter grade: "))
-                i["grades"][subject] = grade
-                save_data()
-                print("Grade updated successfully.")
-                return
-        print("Student not found.")
+        name = input("Enter Doctor name:- ")
 
-class teacher(Registration):
-    def get_roles(self):
-        return "Teacher"
+        specialization = input("Enter doctors specialization:- ")
+        if specialization.lower() not in ("male", "female","other"):
+            print("Please enter specialization again!")
 
-    def register(self):
-        name = input("Enter teacher name: ")
-        subject = input("Enter teacher subject: ")
-        email = input("Enter teacher email: ")
-        if not Registration.validate_email(email):
+        phone = int(input("Enter doctors phone no:- "))
+        if not Person.validate_mob(phone):
+            print("Invalid phone number format.")
+            return
+
+        email = input("Enter doctor Email:- ")
+        if not Person.validate_email(email):
             print("Invalid email format.")
             return
 
-        roll_no = input("Enter teacher roll number: ")
-        for i in data["teachers"]:
-            if i["roll_no"] == roll_no:
-                print("Teacher with this roll number already exists.")
-                return
+        experience = input("Enter doctors experience:- ")
 
-        teacher_data = {
-            "name": name,
-            "subject": subject,
+        doctors_data = {
+            "id": id,
+            "name" : name,
+            "specialization": specialization,
             "email": email,
-            "roll_no": roll_no
+            "phone": phone,
+            "experience":experience
         }
-        data["teachers"].append(teacher_data)
-        save_data()
-        print("Teacher registered successfully.")
+        data["doctors"].append(doctors_data)
+        save()
+        print("Doctors details saved successfully!")
 
     def show_details(self):
-        roll_no = input("Enter teacher roll number: ")
-        for i in data["teachers"]:
-            if i["roll_no"] == roll_no:
-                print(f"Name: {i['name']}")
-                print(f"Subject: {i['subject']}")
-                print(f"Email: {i['email']}")
-                print(f"Roll Number: {i['roll_no']}")
-                return
-        print("Teacher not found.")
+       pass
 
-print("press 1 to register as a student")
-print("press 2 to register as a teacher")   
-print("press 3 to update grades of a student")
-print("press 4 to view details of a student")
-print("press 5 to view details of a teacher")
+    def search_details(self):
+        pass
 
-choice = int(input("Enter your choice: "))
-student = student()
-teacher = teacher()
-if choice == 1:
-    student.register()
-
-elif choice == 2:
-    teacher.register()
-elif choice == 3:
-    student.update_grades()
-elif choice == 4:
-    student.show_details()
-elif choice == 5:
-    teacher.show_details()
-else:
-    print("Invalid choice. Please select a valid option.")
