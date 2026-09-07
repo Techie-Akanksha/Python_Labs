@@ -3,19 +3,21 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 
 hospital_data = "hospital_data.json"
-data = {"patients":[], "doctors":[]}
+data = {"patients": [], "doctors": []}
 
 if Path(hospital_data).exists():
-    with open(hospital_data,"r") as f:
+    with open(hospital_data, "r") as f:
         content = f.read()
         if content:
             data = json.loads(content)
 
+
 def save():
-    with open(hospital_data,"w") as f:
+    with open(hospital_data, "w") as f:
         json.dump(data, f, indent=4)
 
-class Person(ABC):  
+
+class Person(ABC):
     @abstractmethod
     def get_role(self):
         pass
@@ -39,27 +41,42 @@ class Person(ABC):
     @staticmethod
     def validate_mob(mob):
         return (
-            len(mob) == 10 
+            len(mob) == 10
             and mob.isdigit()
             and mob[0] in "6789"
         )
+
+    @staticmethod
+    def valid_bloodgrp(blood_grp):
+        valid_groups = ("A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-")
+        return blood_grp.upper() in valid_groups
+
 
 class Patient(Person):
     def get_role(self):
         return "Patient"
 
     def details(self):
-        id = int(input("Enter patient ID:- "))
-        for i in data["patients"]:
-            if i["id"] == id:
+        while True:
+            try:
+                patient_id = int(input("Enter patient ID:- "))
+                break
+            except ValueError:
+                print("Please enter a valid patient ID.")
+
+        for patient in data["patients"]:
+            if patient["patient_id"] == patient_id:
                 print("Patient with this patient ID already exists")
                 return
 
         name = input("Enter patients name:- ")
+
         while True:
             try:
                 age = int(input("Enter patients age:- "))
-                break
+                if age > 0 and age < 120:
+                    break
+                print("Please enter valid age")
             except ValueError:
                 print("Please enter valid age")
 
@@ -69,23 +86,40 @@ class Patient(Person):
                 break
             print("Please enter gender again!")
 
-        phone = input("Enter patient phone no:- ")
-        if not Person.validate_mob(phone):
-            print("Invalid phone number format.")
-            return
+        while True:
+            phone = input("Enter patient phone no:- ")
+            if not Person.validate_mob(phone):
+                print("Invalid phone number format.")
+                continue
+            break
 
-        email = input("Enter patient Email:- ")
-        if not Person.validate_email(email):
-            print("Invalid email format.")
-            return
+        while True:
+            email = input("Enter patient Email:- ")
+            if not Person.validate_email(email):
+                print("Invalid email format.")
+                return
+            break
 
-        blood_grp = input("Enter patient blood group:- ")
-        address = input("Enter patients address:- ")
+        while True:
+            blood_grp = input("Enter patient blood group:- ").strip().upper()
+
+            if Person.valid_bloodgrp(blood_grp):
+                break
+
+            print("Invalid blood group. Please enter a valid blood group.")
+
+        while True:
+            address = input("Enter patients address:- ")
+            if not address.strip():
+                print("Address cannot be empty!")
+                continue
+            break
+
         medical_history = input("Enter patients medical history:- ")
 
         patients_data = {
-            "id": id,
-            "name" : name,
+            "patient_id": patient_id,
+            "name": name,
             "age": age,
             "gender": gender,
             "phone": phone,
@@ -94,17 +128,26 @@ class Patient(Person):
             "address": address,
             "medical_history": medical_history
         }
+
         data["patients"].append(patients_data)
         save()
+
         print("Patients details saved successfully!")
+        print()
 
     def show_details(self):
         print()
-        id = int(input("Enter Patient ID:- "))
+
+        try:
+            patient_id = int(input("Enter Patient ID:- "))
+        except ValueError:
+            print("Please enter a valid Patient ID.")
+            return
+
         for patient in data["patients"]:
-            if patient["id"] == id:
+            if patient["patient_id"] == patient_id:
                 print()
-                print("="*5,"Show Patient Details","="*5)
+                print("=" * 5, "Show Patient Details", "=" * 5)
                 print()
                 print(f"Name: {patient['name']}")
                 print(f"age: {patient['age']}")
@@ -116,17 +159,19 @@ class Patient(Person):
                 print(f"medical_history: {patient['medical_history']}")
                 print()
                 return
+
         print("Patient not found")
 
     def search_details(self):
         print()
+
         blood_grp = input("Enter blood group to search:- ")
         found = False
 
-        for patient in data["patients"]:            
+        for patient in data["patients"]:
             if patient["blood_grp"].lower() == blood_grp.lower():
-                print()        
-                print("="*5,"Search Doctors","="*5)
+                print()
+                print("=" * 5, "Search Patients", "=" * 5)
                 print()
                 print(f"Name: {patient['name']}")
                 print(f"age: {patient['age']}")
@@ -137,36 +182,188 @@ class Patient(Person):
                 print(f"address: {patient['address']}")
                 print(f"medical_history: {patient['medical_history']}")
                 print()
+
                 found = True
 
         if not found:
             print("Patient not found")
 
     def update_details(self):
-        pass
+        print()
+
+        try:
+            patient_id = int(input("Enter Patient ID:- "))
+        except ValueError:
+            print("Please enter a valid Patient ID.")
+            return
+
+        for patient in data["patients"]:
+            if patient["patient_id"] == patient_id:
+                print()
+                print("Patient found.")
+                while True:
+                    print()
+                    print("What do you want to update?")
+                    print("1. Name")
+                    print("2. Age")
+                    print("3. Gender")
+                    print("4. Phone")
+                    print("5. Email")
+                    print("6. Blood Group")
+                    print("7. Address")
+                    print("8. Medical History")
+                    print("9. Exit")
+
+                    try:
+                        choice = int(input("Enter your choice:- "))
+                    except ValueError:
+                        print("Please enter a valid choice.")
+                        continue
+
+                    if choice == 1:
+                        name = input("Enter Patient Name:- ")
+                        patient["name"] = name
+                        save()
+                        print("Patient name updated successfully!")
+
+                    elif choice == 2:
+                        while True:
+                            try:
+                                age = int(input("Enter patients age:- "))
+                                if age > 0 and age < 120:
+                                    break
+                                print("Please enter valid age")
+                            except ValueError:
+                                print("Please enter valid age")      
+                        patient['age'] = age
+                        save()
+                        print("Patient age updated successfully!")                
+
+                    elif choice == 3:
+                        while True:
+                            gender = input("Enter patient gender: ")
+                            if gender.lower() in ("male", "female", "other"):
+                                break
+                            print("Please enter gender again!")
+                        patient['gender'] = gender
+                        save()
+                        print("Patient gender updated successfully!")
+                        
+                    elif choice == 4:
+                        while True:
+                            phone = input("Enter patient phone no:- ")
+                            if not Person.validate_mob(phone):
+                                print("Invalid phone number format.")
+                                continue
+                            break
+                        patient['phone'] = phone
+                        save()
+                        print("Patients phone no updated successfully!")
+
+                    elif choice == 5:
+                        while True:
+                            email = input("Enter patient Email:- ")
+                            if not Person.validate_email(email):
+                                print("Invalid email format.")
+                                continue
+                            break
+
+                        patient["email"] = email
+                        save()
+                        print("Patients email updated successfully!")
+
+                    elif choice == 6:
+                        while True:
+                            blood_grp = input("Enter patient blood group:- ").strip().upper()
+
+                            if Person.valid_bloodgrp(blood_grp):
+                                break
+
+                            print("Invalid blood group. Please enter a valid blood group.")
+
+                        patient['blood_grp'] = blood_grp
+                        save()
+                        print("Patients blood group updated successfully!")
+
+                    elif choice == 7:
+                        while True:
+                            address = input("Enter patients address:- ")
+                            if not address.strip():
+                                print("Address cannot be empty!")
+                                continue
+                            break
+                        patient['address'] = address
+                        save()
+                        print("Patients address updated successfully!")
+                        
+                    elif choice == 8:
+                        medical_history = input("Enter patients medical history:- ")
+                        patient['medical_history'] = medical_history
+                        save()
+                        print("Patients medical history updated successfully!")
+               
+
+                    elif choice == 9:
+                        print("Exiting update menu...")
+                        return
+                    
+                    else:
+                        print("Please enter a valid choice.")
+
+        print("Patient not found")
 
     def delete_details(self):
-        pass
+        print()
+        try:
+            patient_id = int(input("Enter Patient ID:- "))
+        except ValueError:
+            print("Please enter a valid Patient ID.")
+            return
+
+        for patient in data['patients']:
+            if patient['patient_id'] == patient_id:
+                print()
+                print("Patient found.")
+
+                confirm = input("Are you sure you want to delete this patient? (yes/no):- ")
+
+                if confirm.lower() == "yes":
+                    data['patients'].remove(patient)
+                    save()
+                    print("Patient deleted successfully!")
+                    return
+
+                else:
+                    print("Patient deletion cancelled.")
+                    return
+
+        print("Patient not found")
+
 
 class Doctor(Person):
     def get_role(self):
         return "Doctor"
 
     def details(self):
-        id = int(input("Enter Doctor ID:- "))
-        for i in data["doctors"]:
-            if i["id"] == id:
+        try:
+            doctor_id = int(input("Enter Doctor ID:- "))
+        except ValueError:
+            print("Please enter a valid Doctor ID.")
+            return
+
+        for doctor in data["doctors"]:
+            if doctor["doctor_id"] == doctor_id:
                 print("Doctor with this Doctor ID already exists")
                 return
 
         name = input("Enter Doctor name:- ")
 
         while True:
-                specialization = input("Enter doctors specialization:- ")
-                if not specialization.strip():
-                    print("Specialization cannot be empty!")
-                    continue
-                break
+            specialization = input("Enter doctors specialization:- ")
+            if not specialization.strip():
+                print("Specialization cannot be empty!")
+                continue
+            break
 
         phone = input("Enter doctors phone no:- ")
         if not Person.validate_mob(phone):
@@ -181,24 +378,32 @@ class Doctor(Person):
         experience = input("Enter doctors experience:- ")
 
         doctors_data = {
-            "id": id,
-            "name" : name,
+            "doctor_id": doctor_id,
+            "name": name,
             "specialization": specialization,
             "email": email,
             "phone": phone,
-            "experience":experience
+            "experience": experience
         }
+
         data["doctors"].append(doctors_data)
         save()
+
         print("Doctors details saved successfully!")
 
     def show_details(self):
         print()
-        id = int(input("Enter Doctor ID:- "))
+
+        try:
+            doctor_id = int(input("Enter Doctor ID:- "))
+        except ValueError:
+            print("Please enter a valid Doctor ID.")
+            return
+
         for doctor in data["doctors"]:
-            if doctor["id"] == id:
+            if doctor["doctor_id"] == doctor_id:
                 print()
-                print("="*5,"Show Doctors Details","="*5)
+                print("=" * 5, "Show Doctors Details", "=" * 5)
                 print()
                 print(f"Name: {doctor['name']}")
                 print(f"Specialization: {doctor['specialization']}")
@@ -207,6 +412,7 @@ class Doctor(Person):
                 print(f"Experience: {doctor['experience']}")
                 print()
                 return
+
         print("Doctor not found")
 
     def search_details(self):
@@ -214,10 +420,11 @@ class Doctor(Person):
 
         specialization = input("Enter specialization to search:- ")
         found = False
+
         for doctor in data["doctors"]:
             if doctor["specialization"].lower() == specialization.lower():
-                print()        
-                print("="*5,"Search Doctors","="*5)
+                print()
+                print("=" * 5, "Search Doctors", "=" * 5)
                 print()
                 print(f"Name: {doctor['name']}")
                 print(f"Specialization: {doctor['specialization']}")
@@ -225,24 +432,26 @@ class Doctor(Person):
                 print(f"Phone: {doctor['phone']}")
                 print(f"Experience: {doctor['experience']}")
                 print()
+
                 found = True
+
         if not found:
             print("Doctor not found")
 
 
+print("---" * 20)
+print("   " * 5, "Hospital Management System", "   " * 5)
+print("---" * 20)
 
-
-print("---"*20)
-print("   "*5,"Hospital Management System","   "*5)
-print("---"*20)
 while True:
     print()
     print("Choose the option")
     print("Press 1 Register as patient")
     print("Press 2 Register as doctor")
     print("Press 3 to Exit menu")
-    patient = Patient
-    doctor = Doctor
+
+    patient = Patient()
+    doctor = Doctor()
 
     try:
         choice = int(input("Enter your option:- "))
@@ -254,7 +463,7 @@ while True:
 
         print()
         print("Started registration as patient")
-        print(" - "*30)
+        print(" - " * 30)
 
         while True:
             print("Choose your option")
@@ -264,11 +473,12 @@ while True:
             print("Press 4 to search patient details")
             print("Press 5 to delete patient details")
             print("Press 6 to Exit")
+
             try:
                 choice = int(input("Enter your operation:- "))
-                break
             except ValueError:
                 print("Please enter valid option.")
+                continue
 
             if choice == 1:
                 patient.details()
@@ -292,34 +502,36 @@ while True:
             else:
                 print("Please enter valid choice")
 
-
     elif choice == 2:
+
+        print()
         print("Started registration as doctor")
-        
+        print(" - " * 30)
+
         while True:
-            print()
             print("Choose your option")
             print("Press 1 to register doctor details")
-            print("Press 2 to view patidoctorent details")
+            print("Press 2 to view doctors details")
             print("Press 3 to search doctor details")
             print("Press 4 to Exit")
+
             try:
                 choice = int(input("Enter your operation:- "))
-                break
             except ValueError:
                 print("Please enter valid option.")
+                continue
 
             if choice == 1:
-                patient.details()
+                doctor.details()
 
             elif choice == 2:
-                patient.show_details()
+                doctor.show_details()
 
             elif choice == 3:
-                patient.search_details()
+                doctor.search_details()
 
             elif choice == 4:
-                print("Exiting patient menu...")
+                print("Exiting doctor menu...")
                 break
 
             else:
@@ -328,10 +540,8 @@ while True:
     elif choice == 3:
         print("Exiting menu...")
         break
+
     else:
         print("Invalid action")
         print("Please enter option again")
-    
-
-
 
