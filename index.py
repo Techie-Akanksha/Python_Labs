@@ -1,240 +1,159 @@
-# Yes. For interview level, focus on **what it is + how it works + common differences + small examples**. Here’s a clean revision version:
+# Function
+# A function is a reusable block of code created to perform a particular task.
 
-# ### 1. Variables & Data Types
+# Now parameters
+# def greet(name):
+#     print("Hello", name)
 
-# A variable is a name that refers to a value/object in memory.
+# greet("Ash")
 
-# ```python
-# name = "Ash"
-# age = 22
-# salary = 50000.5
-# ```
+# Here:
 
-# Common Python data types:
+# name → parameter
+# "Ash" → argument
+# When greet("Ash") executes, "Ash" is passed to name
+# Then print() executes.
 
-# * `int` → `10`
-# * `float` → `10.5`
-# * `str` → `"Ash"`
-# * `bool` → `True/False`
-# * `list`, `tuple`, `set`, `dict`
+# Now return
 
-# Python is **dynamically typed**, so we don't need to specify the type manually.
+# result is a local variable inside the function.
+# return result takes the value stored in result and sends that value back to the place where the function was called.
 
-# ---
+# print ≠ return
+# def add(a, b):
+#     print(a + b)
 
-# ### 2. Operators
+# This displays the result.
 
-# Operators are used to perform operations on values.
+# But:
 
-# * Arithmetic → `+ - * / % // **`
-# * Comparison → `== != > < >= <=`
-# * Logical → `and or not`
-# * Assignment → `= += -= *=`
-# * Membership → `in`, `not in`
-# * Identity → `is`, `is not`
-
-# Important interview point:
-
-# `==` checks **value**, while `is` checks **object identity**.
-
-# ---
-
-# ### 3. Strings
-
-# A string is a sequence of characters.
-
-# ```python
-# name = "Python"
-# ```
-
-# Strings are **immutable**, meaning we cannot directly change an existing string.
-
-# ```python
-# name = "Python"
-# name = name + " Programming"
-# ```
-
-# This creates a new string.
-
-# Common methods: `lower()`, `upper()`, `replace()`, `split()`, `strip()`.
-
-# ---
-
-# ### 4. Lists
-
-# List is an **ordered and mutable** collection.
-
-# ```python
-# numbers = [10, 20, 30]
-# ```
-
-# We can add, remove and modify elements.
-
-# Common methods:
-# `append()`, `extend()`, `insert()`, `remove()`, `pop()`, `sort()`.
-
-# ---
-
-# ### 5. Tuples
-
-# Tuple is an **ordered and immutable** collection.
-
-# ```python
-# data = (10, 20, 30)
-# ```
-
-# Once created, elements cannot be changed.
-
-# Main difference:
-
-# **List → mutable**
-# **Tuple → immutable**
-
-# Tuples are useful when data should not be modified.
-
-# ---
-
-# ### 6. Sets
-
-# Set is an **unordered collection of unique elements**.
-
-# ```python
-# numbers = {1, 2, 3, 3}
-# ```
-
-# Result:
-
-# ```python
-# {1, 2, 3}
-# ```
-
-# Duplicates automatically get removed.
-
-# Common methods: `add()`, `remove()`, `discard()`, `union()`, `intersection()`.
-
-# ---
-
-# ### 7. Dictionaries
-
-# Dictionary stores data in **key-value pairs**.
-
-# ```python
-# student = {
-#     "name": "Ash",
-#     "age": 22
-# }
-# ```
-
-# We access values using keys:
-
-# ```python
-# student["name"]
-# ```
-
-# Keys must be **unique and hashable**.
-
-# Common methods: `keys()`, `values()`, `items()`, `get()`, `update()`.
-
-# ---
-
-# ### 8. `if / elif / else`
-
-# Used for decision making.
-
-# ```python
-# if age >= 18:
-#     print("Adult")
-# elif age > 0:
-#     print("Minor")
-# else:
-#     print("Invalid")
-# ```
-
-# Python checks conditions from top to bottom and executes the first matching block.
-
-# ---
-
-# ### 9. `for` / `while`
-
-# `for` is generally used when iterating over a sequence/iterable.
-
-# ```python
-# for x in [1, 2, 3]:
-#     print(x)
-# ```
-
-# `while` runs as long as a condition is `True`.
-
-# ```python
-# while x < 5:
-#     x += 1
-# ```
-
-# Interview point: `for` is commonly used for iteration, while `while` is useful when the number of iterations depends on a condition.
-
-# ---
-
-# ### 10. `break`, `continue`, `pass`
-
-# `break` → completely stops the loop.
-
-# `continue` → skips the current iteration and moves to the next one.
-
-# `pass` → does nothing; it's basically a placeholder.
-
-# ```python
-# for i in range(5):
-#     if i == 3:
-#         break
-# ```
-
-# ---
-
-# ### 11. Functions
-
-# A function is a reusable block of code designed to perform a specific task.
-
-# ```python
-# def greet():
-#     print("Hello")
-# ```
-
-# Call it using:
-
-# ```python
-# greet()
-# ```
-
-# Main benefit → **code reusability and better organization**.
-
-# ---
-
-# ### 12. Parameters & Arguments
-
-# **Parameter** is the variable defined in the function.
-
-# **Argument** is the actual value passed while calling the function.
-
-# ```python
-# def greet(name):   # name = parameter
-#     print(name)
-
-# greet("Ash")       # "Ash" = argument
-# ```
-
-# ---
-
-# ### 13. `return`
-
-# `return` sends a value back from the function.
-
-# ```python
 # def add(a, b):
 #     return a + b
 
-# result = add(10, 20)
-# ```
+# This sends the value back to the caller.
 
-# Here `result` becomes `30`.
 
-# Important interview point: **`print()` displays something, while `return` gives the value back to the caller.**
+# When Python sees a variable inside a function, it generally searches:
+
+# L → E → G → B
+
+# This is called the LEGB rule:
+
+# L = Local → current function
+# E = Enclosing → outer/nested function
+# G = Global → module level
+# B = Built-in → Python's built-ins like len, print, sum
+
+# Python first looks in the current local scope. If it doesn't find the variable, it looks outward.
+
+# 1. global keyword
+
+x = 100
+
+def test():
+    global x
+    x = 50
+
+test()
+
+print(x)
+
+# The global keyword allows a function to modify a variable defined in the global scope.
+
+# 2. Enclosing scope
+
+# This happens when we have a function inside another function.
+def outer():
+    x = 100
+
+    def inner():
+        print(x)
+
+    inner()
+
+outer()
+# This is the E in LEGB.
+
+# L → Local
+# E → Enclosing
+# G → Global
+# B → Built-in
+
+# 1. *args
+
+# Allows a function to receive multiple positional arguments.
+
+# 2. **kwargs
+
+# Allows a function to receive multiple keyword arguments.
+
+# 3. How Python packs those arguments
+
+# This is the important internal understanding.
+
+def add(*args):
+    print(args)
+
+add(10, 20, 30, 40)
+
+# One important distinction
+
+# args itself is just the parameter name. The * tells Python:
+
+# "Take all extra positional arguments and pack them into a tuple."
+
+def add(*args):
+    return sum(args)
+
+print(add(10, 20, 30, 40))
+
+# Now **kwargs
+
+def student(**kwargs):
+    print(kwargs)
+
+student(name="Ash", age=24, city="Mumbai")
+
+# kwargs → {
+#     "name": "Ash",
+#     "age": 24,
+#     "city": "Mumbai"
+# }
+
+# One more important thing: * has two jobs
+
+# You should know this because it comes up constantly.
+
+# Packing
+# def test(*args):
+#     print(args)
+
+# Here * packs multiple arguments into a tuple.
+
+# Unpacking
+# numbers = [10, 20, 30]
+
+# print(*numbers)
+
+# Here * unpacks the list:
+
+# [10, 20, 30]
+#      ↓
+#    *numbers
+#      ↓
+# 10 20 30
+
+# Similarly:
+
+# data = {"name": "Ash", "age": 24}
+
+# test(**data)
+
+# def test(*args):
+#     print(args)
+
+# data = {"name": "Ash", "age": 24}
+
+# test(**data)
+
+# ** unpacks the dictionary into keyword arguments.
