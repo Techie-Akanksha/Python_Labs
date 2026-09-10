@@ -1,270 +1,162 @@
-# Let's understand First-Class Functions
+# Concept 1: List Comprehension
 
-# You already understand this:
+# Normal approach:
 
-# x = 10
+# numbers = [1, 2, 3, 4, 5]
 
-# 10 is a value, and we can store that value in x.
+# squares = []
 
-# Python also treats a function as an object.
+# for n in numbers:
+#     squares.append(n * n)
 
-# Look:
+# print(squares)
 
-# def greet():
-#     print("Hello")
+# Output:
 
-# When Python executes this definition, it creates a function object.
+# [1, 4, 9, 16, 25]
 
-# Conceptually:
+# List comprehension gives us a shorter way:
 
-# greet ──────────→ Function Object
+# numbers = [1, 2, 3, 4, 5]
 
-# Now:
+# squares = [n * n for n in numbers]
 
-# x = greet
+# print(squares)
 
-# We are saying:
+# Same result.
 
-# "Make x refer to the same function object that greet refers to."
+# The basic pattern is:
+
+# [expression for variable in iterable]
 
 # So:
 
-# greet ───────┐
-#              ↓
-#         Function Object
-#              ↑
-#              │
-# x ───────────┘
+# [n * n for n in numbers]
 
-# Now:
+# means:
 
-# x()
+# Take each n from numbers
+#         ↓
+# calculate n * n
+#         ↓
+# put result into a new list
+# With condition
+# even = [n for n in numbers if n % 2 == 0]
 
-# works.
+# Flow:
 
-# Why?
+# 1 → odd → skip
+# 2 → even → add
+# 3 → odd → skip
+# 4 → even → add
+# 5 → odd → skip
 
-# Because x refers to a function object.
+# Result:
 
-# So x() means:
+# [2, 4]
+# Interview answer
 
-# Call the function object referred to by x.
+# "List comprehension is a concise way to create a new list by applying an expression to each item of an iterable, optionally using a condition."
 
-# This is the key idea
+# Concept 2: map()
 
-# Python allows functions to be treated like normal objects/values.
+# map() applies a function to every item.
 
-# That's what first-class functions means.
+# numbers = [1, 2, 3, 4]
+
+# def square(n):
+#     return n * n
+
+# result = map(square, numbers)
+
+# print(list(result))
+
+# Flow:
+
+# numbers
+#    ↓
+# 1 → square → 1
+# 2 → square → 4
+# 3 → square → 9
+# 4 → square → 16
+#    ↓
+# [1, 4, 9, 16]
+
+# So:
+
+# map(square, numbers)
+
+# means:
+
+# Apply square() to every element of numbers.
 
 # Interview answer
 
-# If interviewer asks:
+# "map() applies a function to each item of an iterable and returns a map iterator containing the transformed values."
 
-# "What are first-class functions in Python?"
+# Notice that we used:
 
-# You can say:
+# list(result)
 
-# "Python treats functions as first-class objects. This means functions can be assigned to variables, passed as arguments, returned from other functions, and stored in data structures."
+# because map() returns an iterator-like object, not an ordinary list directly.
 
-# That's a strong interview answer.
+# Concept 3: filter()
 
-# Now Higher-Order Function
+# filter() keeps only the elements that satisfy a condition.
 
-# This becomes easy once first-class functions are clear.
+# numbers = [1, 2, 3, 4, 5, 6]
 
-# Look:
+# def is_even(n):
+#     return n % 2 == 0
 
-# def greet():
-#     print("Hello")
+# result = filter(is_even, numbers)
 
-# def execute(func):
-#     func()
+# print(list(result))
 
-# execute(greet)
+# Flow:
 
-# Let's follow it.
+# 1 → is_even → False → reject
+# 2 → is_even → True  → keep
+# 3 → is_even → False → reject
+# 4 → is_even → True  → keep
+# 5 → is_even → False → reject
+# 6 → is_even → True  → keep
 
-# Step 1
+# Result:
 
-# Python creates:
-
-# greet → function object
-# execute → function object
-# Step 2
-
-# We call:
-
-# execute(greet)
-
-# Notice something important:
-
-# greet
-
-# NOT:
-
-# greet()
-
-# We're passing the function itself, not calling it yet.
-
-# So:
-
-# greet ─────→ Function Object
-#                   ↓
-#               passed to
-#                   ↓
-# execute(func)
-
-# Inside execute:
-
-# func = greet
-
-# Conceptually:
-
-# func ─────→ same Function Object
-
-# Then:
-
-# func()
-
-# calls that function.
-
-# Therefore:
-
-# execute(greet)
-#        ↓
-# func refers to greet
-#        ↓
-# func()
-#        ↓
-# greet()
-#        ↓
-# Hello
-# Why is execute() called a Higher-Order Function?
-
-# Because it takes another function as an argument.
-
-# def execute(func):
-
-# func is a function received as an argument.
-
-# Therefore:
-
-# A higher-order function is a function that takes another function as an argument or returns a function.
-
+# [2, 4, 6]
 # Interview answer
 
-# "A higher-order function is a function that accepts another function as an argument or returns a function."
+# "filter() applies a function to the elements of an iterable and keeps only the elements for which the function returns True."
 
-# Examples you'll later see:
+# 🔥 The difference
 
-# map()
-# filter()
-# sorted()
+# Remember this:
 
-# These commonly work with functions.
+# LIST COMPREHENSION → create/transform a list
+# map()              → transform every item
+# filter()           → select certain items
 
-# Now Lambda
+# Example:
 
-# Lambda is actually the easiest of the three.
+# numbers = [1, 2, 3, 4, 5]
 
-# Normally:
+# Transform:
 
-# def square(x):
-#     return x * x
+# [n * 2 for n in numbers]
 
-# Lambda:
+# → [2, 4, 6, 8, 10]
 
-# square = lambda x: x * x
+# Map:
 
-# Think:
+# list(map(lambda n: n * 2, numbers))
 
-# lambda x: x * x
-#        ↓
-# input x
-#        ↓
-# x * x
-#        ↓
-# returned result
+# → [2, 4, 6, 8, 10]
 
-# So:
+# Filter:
 
-# square(5)
+# list(filter(lambda n: n % 2 == 0, numbers))
 
-# returns:
+# → [2, 4]
 
-# 25
-# Interview answer
-
-# "A lambda function is a small anonymous function written using the lambda keyword. It can take multiple arguments but contains a single expression."
-
-# 🔥 Now connect all 3
-
-# This is where it finally makes sense:
-
-# square = lambda x: x * x
-
-# def execute(func, value):
-#     return func(value)
-
-# result = execute(square, 5)
-
-# Think step-by-step:
-
-# lambda
-#   ↓
-# creates function object
-#   ↓
-# square refers to it
-#   ↓
-# square is passed to execute()
-#   ↓
-# func refers to same function
-#   ↓
-# func(5)
-#   ↓
-# 5 * 5
-#   ↓
-# 25
-#   ↓
-# result = 25
-
-# So:
-
-# Concept	Meaning
-# First-class function	Function can be treated like an object/value
-# Higher-order function	Function accepts/returns another function
-# Lambda	Short way to create a small anonymous function
-# The relationship
-# Lambda
-#    ↓
-# creates a function
-#    ↓
-# Function is first-class
-#    ↓
-# can be passed around
-#    ↓
-# Higher-order function can receive it
-
-# That's the connection you were missing.
-
-# One important correction
-
-# Don't think:
-
-# "func contains the function's output."
-
-# No.
-
-# Here:
-
-# execute(square, 5)
-
-# func refers to the function itself.
-
-# Only when we do:
-
-# func(5)
-
-# does the function execute and produce 25.
-
-# That's a very important interview distinction.
+# So we're already learning concepts that connect directly to your previous lambda + higher-order function topic.
