@@ -141,13 +141,85 @@ print(len(team))
 
 # __len__() is a special method that defines what len() should return when it is used with a custom object.
 
+
+
+
+# 3) __eq__()
 class Student:
 
     def __init__(self, name):
         self.name = name
+
+    def __eq__(self, other):
+        return self.name == other.name
 
 
 s1 = Student("Ash")
 s2 = Student("Ash")
 
 print(s1 == s2)
+
+
+# Normally agar yaha ham __eq__() nahi lagate to s1 == s2 ka output false hoga. kyuki name ke value chahe same ho par unke objects alag hai to final output false hoga.
+
+# s1 == s2
+#    ↓
+# __eq__(s1, s2)
+#    ↓
+# self.name == other.name
+#    ↓
+# "Ash" == "Ash"
+#    ↓
+# True
+
+
+# Interview answer
+
+# __eq__() is a special method used to define how two objects should be compared using the == operator.
+
+class Employee:
+
+    def __init__(self, name, salary):
+        self.name = name
+        self.salary = salary
+
+    def __eq__(self, other):
+        return self.name == other.name
+
+
+e1 = Employee("Ash", 30000)
+e2 = Employee("Ash", 50000)
+e3 = Employee("Rahul", 30000)
+
+print(e1 == e2)
+print(e1 == e3)
+
+# == operator object different hone ki wajah se false return karta hai. Ye jab custom __eq__() define nahi hota tab generally default behavior ko describe karta hai.
+
+#Lekin __eq__() define karne ke baad: e1 == e2
+
+#Python effectively: e1.__eq__(e2) call karta hai.
+
+# mein objects compare nahi ho rahe, balki humne specifically names compare karne ka rule define kiya hai.
+
+# e1 == e2
+#    ↓
+# __eq__(e1, e2)
+#    ↓
+# self       → e1
+# other      → e2
+#    ↓
+# self.name == other.name
+#    ↓
+# "Ash" == "Ash"
+#    ↓
+# True
+
+
+
+
+# __eq__() sirf "comparison karne wala method" nahi hai.
+
+# More accurately:
+
+# It allows us to define what equality means for our custom objects.
