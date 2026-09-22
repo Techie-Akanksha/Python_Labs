@@ -1,205 +1,308 @@
-# MRO kya hai?
+#⭐ Topic: Exception Handling — try, except, else, finally
 
-#⭐ MRO = Method Resolution Order
+try:
+    num = int(input("Enter number: "))
+    result = 10 / num
+    print(result)
 
-# Simple language mein:
+except ValueError:
+    print("Please enter a valid number.")
 
-# Jab Python ko kisi method ya attribute ko find karna hota hai, especially inheritance/multiple inheritance mein, Python jis order mein classes ko search karta hai us order ko MRO kehte hain.
+except ZeroDivisionError:
+    print("Cannot divide by zero.")
 
-class A:
-    def show(self):
-        print("A")
+else:
+    print("Calculation successful.")
 
-
-class B(A):
-    def show(self):
-        print("B")
-
-
-class C(A):
-    def show(self):
-        print("C")
+finally:
+    print("Program finished.")
 
 
-class D(B, C):
+# 1. try
+
+# Risky code yahan:
+
+# try:
+#     num = int(input())
+#     result = 10 / num
+
+# Python normally execute karega.
+
+
+# 2. except
+
+# Agar try ke andar error aaya, matching except execute hota hai.
+
+# For example:
+
+# input → "abc"
+# int("abc")
+
+# raises:
+
+# ValueError
+
+# So:
+
+# except ValueError:
+
+# execute hoga.
+
+# 3. Multiple except
+
+# Different errors ko separately handle kar sakte ho:
+
+# except ValueError:
+#     ...
+
+# except ZeroDivisionError:
+#     ...
+
+# For:
+
+# input → 0
+
+# int(0) works, but:
+
+# 10 / 0
+
+# gives ZeroDivisionError.
+
+# 4. else
+
+# else tab execute hota hai jab try successfully complete ho jaye aur koi exception na aaye.
+
+# try successful
+#       ↓
+#     else
+# 5. finally
+
+# finally almost always execute hota hai, chahe error aaye ya na aaye.
+
+# Common use:
+
+# file close karna
+# database connection cleanup
+# resources release karna
+
+# Flow:
+
+#               try
+#              /   \
+#         success   error
+#            ↓        ↓
+#          else    except
+#              \    /
+#               finally
+
+# 🎯 Interview answer
+
+# Q: What is exception handling in Python?
+
+# Exception handling is a mechanism used to handle runtime errors without abruptly terminating the program. Python provides try, except, else, and finally blocks for this purpose.
+
+try:
+    print("A")
+    x = 10 / 0
+    print("B")
+
+except ZeroDivisionError:
+    print("C")
+
+else:
+    print("D")
+
+finally:
+    print("E")
+
+print("F")
+
+# try
+#  ↓
+# A print
+#  ↓
+# 10 / 0
+#  ↓
+# ZeroDivisionError
+#  ↓
+# B ❌ skip
+#  ↓
+# except
+#  ↓
+# C print
+#  ↓
+# else ❌ skip
+#  ↓
+# finally
+#  ↓
+# E print
+#  ↓
+# F print
+
+# One important interview point
+
+# else sirf tab execute hota hai jab try mein exception nahi aata.
+
+# finally ka purpose cleanup hota hai, aur normal exception flow mein woh execute hota hi hai—even when an exception occurs.
+
+
+#⭐ Next concept: raise
+
+def withdraw(balance, amount):
+    if amount > balance:
+        raise ValueError("Insufficient balance")
+
+    return balance - amount
+
+# Yahan Python automatically error nahi de raha tha. Humne condition check karke khud exception raise ki.
+
+# amount > balance?
+#        ↓
+#       YES
+#        ↓
+# raise ValueError
+#        ↓
+# function stops
+
+try:
+    balance = withdraw(5000, 7000)
+except ValueError as e:
+    print(e)
+
+# Interview answer
+
+# raise is used to explicitly trigger an exception when a specific condition occurs.
+
+def check_age(age):
+    if age < 18:
+        raise ValueError("Age must be 18 or above")
+    return "Eligible"
+
+
+try:
+    print(check_age(16))
+except ValueError as e:
+    print(e)
+
+# check_age(16)
+#       ↓
+# age < 18  → True
+#       ↓
+# raise ValueError(...)
+#       ↓
+# function stops
+#       ↓
+# "Eligible" ❌ nahi chalega
+#       ↓
+# except ValueError as e
+#       ↓
+# e = ValueError object
+#       ↓
+# print(e)
+
+# ⭐ as e ko specifically samjho
+# except ValueError as e:
+#     print(e)
+
+# Yahan e error/exception object ka reference hai.
+
+# Agar hum likhte:
+
+# except ValueError:
+#     print("Something went wrong")
+
+# toh hum exception ko directly access nahi kar rahe.
+
+# as e useful hota hai jab hume actual error message/details inspect ya log karni ho.
+
+# Interview answer
+
+# raise explicitly raises an exception, while except ... as e allows us to capture the exception object and access its details.
+
+
+
+# ⭐Next: Custom Exceptions
+
+# Instead of:
+
+# raise ValueError("Age must be 18 or above")
+
+# we can create our own exception:
+class InvalidAgeError(Exception):
     pass
 
-d = D()
-d.show()
+# Then:
+def check_age(age):
+    if age < 18:
+        raise InvalidAgeError("Age must be 18 or above")
 
-#⭐ MRO dekh kaise sakte hain?
+    return "Eligible"
 
-# Python mein:
+# And handle it:
+try:
+    print(check_age(16))
 
-print(D.mro())
-
-# ya:
-
-print(D.__mro__)
-
-#⭐ super() aur MRO ka connection 🔥
-
-class A:
-    def show(self):
-        print("A")
+except InvalidAgeError as e:
+    print(e)
 
 
-class B(A):
-    def show(self):
-        print("B")
-        super().show()
+#   Why custom exception?
+
+# Generic ValueError se pata chalta hai ki value invalid hai.
+
+# Custom:
+
+# InvalidAgeError
+
+# se code ka meaning immediately clear hota hai.
+
+# Interview line:
+
+# Custom exceptions allow us to create application-specific error types that make error handling more meaningful and organized.
 
 
-class C(B):
-    def show(self):
-        print("C")
-        super().show()
-
-c = C()
-c.show()
-
-# super() ka matlab simply:
-
-# "Parent class ko call karo"
-
-# ye hamesha exact immediate parent ko call kare — multiple inheritance mein ye wording incomplete hai.
-
-# Better:
-
-# super() MRO ke according next class/method ko access karta hai.
-
-# Ye interview mein stronger answer hai.
-
-#⭐ Multiple inheritance mein super() ka magic
-class A:
-    def show(self):
-        print("A")
+class InsufficientBalanceError(Exception):
+    pass
 
 
-class B(A):
-    def show(self):
-        print("B")
-        super().show()
+def withdraw(balance, amount):
+    if amount > balance:
+        raise InsufficientBalanceError("Insufficient balance")
+
+    return balance - amount
 
 
-class C(A):
-    def show(self):
-        print("C")
-        super().show()
+try:
+    balance = withdraw(5000, 7000)
+    print(balance)
+
+except InsufficientBalanceError as e:
+    print(e)
+
+print("Transaction completed")
 
 
-class D(B, C):
-    def show(self):
-        print("D")
-        super().show()
-
-d = D()
-d.show()
-
-
-# D.show()
-#  ↓
-# print("D")
-#  ↓
-# super()
-#  ↓
-# B.show()
-#  ↓
-# print("B")
-#  ↓
-# super()
-#  ↓
-# C.show()
-#  ↓
-# print("C")
-#  ↓
-# super()
-#  ↓
-# A.show()
-#  ↓
-# print("A")
-
-# ⭐ Important
-
-# Notice:
-# B ka parent directly A hai.
-# But B ke andar:super().show()
-# ne C ko call kiya, A ko directly nahi.
-# Why?Because super() MRO follow karta hai.
-# MRO:D → B → C → A
-# B ke baad MRO mein C hai.That's why C execute hua.
-
-# super() follows the Method Resolution Order. It calls the next class in the MRO rather than simply calling the immediate parent class.
+# withdraw(5000, 7000)
+#         ↓
+# 7000 > 5000 → True
+#         ↓
+# raise InsufficientBalanceError
+#         ↓
+# function stops
+#         ↓
+# except catches exception
+#         ↓
+# e = exception object
+#         ↓
+# print(e)
+#         ↓
+# Insufficient balance
+#         ↓
+# Transaction completed
 
 
-# ⭐Multiple Inheritance ka practical side: super() + Constructor Chaining
-# MRO samajh liya, ab dekhte hain ki constructors ke saath MRO kaise work karta hai.
+# ⭐ Why custom exception?
 
-class A:
-    def __init__(self):
-        print("A constructor")
+# Tum interview mein bol sakti ho:
 
-
-class B(A):
-    def __init__(self):
-        print("B constructor")
-        super().__init__()
-
-
-class C(A):
-    def __init__(self):
-        print("C constructor")
-        super().__init__()
-
-
-class D(B, C):
-    def __init__(self):
-        print("D constructor")
-        super().__init__()
-
-
-d = D()
-
-# D.__init__()
-#    ↓
-# print("D constructor")
-#    ↓
-# super()
-#    ↓
-# B.__init__()
-#    ↓
-# print("B constructor")
-#    ↓
-# super()
-#    ↓
-# C.__init__()
-#    ↓
-# print("C constructor")
-#    ↓
-# super()
-#    ↓
-# A.__init__()
-#    ↓
-# print("A constructor")
-
-# ⭐ Most important point
-
-# Tumne jo bola:
-
-# "super() MRO mein next class ko call karega."
-
-# Exactly.
-
-# Bas interview mein thoda precise bolna:
-
-# super() calls the next implementation according to the class's MRO. It does not simply mean "call my parent."
-
-
-#⭐ One subtle point
-
-# Agar B ka direct parent A hai, phir bhi:
-B.__init__()
-    # ↓
-super().__init__()
-
-# C ko call kar sakta hai, because B ko D ke context mein execute kiya ja raha hai aur D ka MRO hai:
+# Custom exceptions make application-specific errors easier to identify, handle, and maintain.
