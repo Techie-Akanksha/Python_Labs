@@ -128,3 +128,5 @@ d.show()
 # Why?Because super() MRO follow karta hai.
 # MRO:D → B → C → A
 # B ke baad MRO mein C hai.That's why C execute hua.
+
+# super() follows the Method Resolution Order. It calls the next class in the MRO rather than simply calling the immediate parent class.
