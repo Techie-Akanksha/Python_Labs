@@ -223,3 +223,122 @@ print(e1 == e3)
 # More accurately:
 
 # It allows us to define what equality means for our custom objects.
+
+# 4) __add()__
+# Python ko pata hai numbers ke liye + ka meaning addition hai. Strings ke liye: Yahan + ka meaning concatenation hai.
+
+# Lekin custom objects? Yahan Python ke paas automatically koi meaningful rule nahi hai ki:"Do Product objects ko + karne ka matlab kya hai?"
+
+# __add__() defines what should happen when the + operator is used with objects of our class.
+
+class Product:
+    def __init__(self, price):
+        self.price = price
+
+    def __add__(self, other):
+        return self.price + other.price 
+
+p1 = Product(100)
+p2 = Product(200)
+
+print(p1 + p2) #Product.__add__(p1, p2)
+
+
+# p1 + p2
+#    ↓
+# __add__(p1, p2)
+#    ↓
+# self → p1
+# other → p2
+#    ↓
+# self.price + other.price
+#    ↓
+# 100 + 200
+#    ↓
+# 300
+#    ↓
+# print(300)
+
+# Real-world use
+
+# Suppose tum Cart class bana rahi ho:
+
+class Cart:
+
+    def __init__(self, total):
+        self.total = total
+
+    def __add__(self, other):
+        return self.total + other.total
+
+cart1 = Cart(500)
+cart2 = Cart(700)
+
+print(cart1 + cart2)
+
+# Two Cart objects ko add karna = unke total amounts ko add karna.
+
+# What is __add__() in Python?
+# "__add__() is a special method that defines the behavior of the + operator for custom objects. It allows us to specify how two objects of a class should be added."
+
+
+# __add__() ka distinction clear karte hain.__add__() result number de sakta hai ya new object bhi de sakta hai?
+
+# Case A — __add__() returns a normal value
+class BankAccount:
+
+    def __init__(self, balance):
+        self.balance = balance
+
+    def __add__(self, other):
+        return self.balance + other.balance
+a1 = BankAccount(5000)
+a2 = BankAccount(3000)
+
+result = a1 + a2
+
+# result BankAccount object nahi hai. It's just an integer.
+
+# a1 + a2
+#    ↓
+# __add__(a1, a2)
+#    ↓
+# self.balance + other.balance
+#    ↓
+# 5000 + 3000
+#    ↓
+# 8000 result → 8000
+
+# Case B — __add__() returns a new object
+
+# Hum likh sakte hain:
+
+class BankAccount:
+
+    def __init__(self, balance):
+        self.balance = balance
+
+    def __add__(self, other):
+        return BankAccount(self.balance + other.balance)
+    
+result = a1 + a2
+
+print(result.balance)
+
+# a1 + a2
+#    ↓
+# __add__(a1, a2)
+#    ↓
+# 5000 + 3000
+#    ↓
+# BankAccount(8000)
+#    ↓
+# NEW OBJECT
+
+# ⭐ The distinction
+
+# __add__() ka job sirf "addition karna" nahi hai. 
+# Its job is: Define what + means for your custom objects.
+
+
+# __add__() takes self and other. self refers to the first object and other refers to the second object involved in the + operation. The method defines what should happen when two BankAccount objects are added.
