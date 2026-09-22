@@ -1,144 +1,130 @@
-# topic : Composition vs Inheritance
+# MRO kya hai?
 
-# "IS-A" relationship hai?
+#⭐ MRO = Method Resolution Order
 
-# → Inheritance
+# Simple language mein:
 
-# "HAS-A" relationship hai?
+# Jab Python ko kisi method ya attribute ko find karna hota hai, especially inheritance/multiple inheritance mein, Python jis order mein classes ko search karta hai us order ko MRO kehte hain.
 
-# → Composition
-
-# ⭐ Inheritance = IS-A
-# Dog IS-A Animal
-
-class Animal:
-    def eat(self):
-        print("Eating")
+class A:
+    def show(self):
+        print("A")
 
 
-class Dog(Animal):
-    def bark(self):
-        print("Barking")
-
-dog = Dog()
-
-dog.eat()
-dog.bark()
-
-# Dog ko Animal ke behavior mil sakte hain.
-
-# Inheritance ka matlab:
-
-# Ek class doosri class se properties/behaviors inherit karti hai because there is an IS-A relationship.
-
-# ⭐ Composition = HAS-A
-# Car HAS-A Engine
-
-class Engine:
-
-    def start(self):
-        print("Engine started")
+class B(A):
+    def show(self):
+        print("B")
 
 
-class Car:
-
-    def __init__(self):
-        self.engine = Engine()
-
-car = Car()
-
-car.engine.start()
-
-# Car object ke andar ek Engine object ka reference rakha gaya hai.
-
-# Interview:
-# "When should you use composition instead of inheritance?"
-
-# Use inheritance when there is a genuine IS-A relationship and the child should follow the parent abstraction. Use composition when one object needs to contain or use another object, representing a HAS-A relationship.
-
-# Aur ek common design principle:
-# Prefer composition over inheritance when inheritance doesn't represent a natural IS-A relationship.
-
-# Ek important practical point
-
-class Car:
-    def __init__(self):
-        self.engine = Engine()
-
-# Composition mein generally hum object ko attribute ke andar rakhte hain:
-
-# Car Object
-#     │
-#     └── engine → Engine Object
-
-# Composition = object contains/uses another object.
-# Inheritance = class extends another class.
-
-# Real software example PDF Q&A application
-
-# PDFQuestionAnswerSystem HAS-A PDFLoader
-# PDFQuestionAnswerSystem HAS-A VectorStore
-# PDFQuestionAnswerSystem HAS-A LLMService 
-# That's Composition. 
-
-class PDFLoader:
-
-    def load(self, file):
-        print("Loading PDF")
+class C(A):
+    def show(self):
+        print("C")
 
 
-class VectorStore:
+class D(B, C):
+    pass
 
-    def search(self, query):
-        print("Searching vectors")
+d = D()
+d.show()
 
+#⭐ MRO dekh kaise sakte hain?
 
-class QA_System:
+# Python mein:
 
-    def __init__(self):
-        self.loader = PDFLoader()
-        self.vector_store = VectorStore()
+print(D.mro())
 
-    def ask_question(self, file, question):
-        self.loader.load(file)
-        self.vector_store.search(question)
+# ya:
 
+print(D.__mro__)
 
-# Another very common example: Service classes
+#⭐ super() aur MRO ka connection 🔥
 
-# Suppose you're building an e-commerce application:
-
-# OrderService
-# │
-# ├── PaymentService
-# ├── EmailService
-# └── DatabaseService
-
-# OrderService doesn't become a PaymentService. This is Composition.
-
-class PaymentService:
-
-    def pay(self, amount):
-        print("Payment:", amount)
+class A:
+    def show(self):
+        print("A")
 
 
-class OrderService:
-
-    def __init__(self):
-        self.payment = PaymentService()
-
-    def place_order(self, amount):
-        self.payment.pay(amount)
-        print("Order placed")
+class B(A):
+    def show(self):
+        print("B")
+        super().show()
 
 
+class C(B):
+    def show(self):
+        print("C")
+        super().show()
 
-# Interview answer
+c = C()
+c.show()
 
-# If interviewer asks:
+# super() ka matlab simply:
 
-# "Where is composition used in real applications?"
+# "Parent class ko call karo"
 
-# You can say:
+# ye hamesha exact immediate parent ko call kare — multiple inheritance mein ye wording incomplete hai.
 
-# "Composition is commonly used when one class needs to use the functionality of another class. For example, an OrderService can contain a PaymentService and an EmailService, or an AI document system can contain a PDF loader, vector store, and LLM service. These components are used by the main class rather than inherited from it."
+# Better:
+
+# super() MRO ke according next class/method ko access karta hai.
+
+# Ye interview mein stronger answer hai.
+
+#⭐ Multiple inheritance mein super() ka magic
+class A:
+    def show(self):
+        print("A")
+
+
+class B(A):
+    def show(self):
+        print("B")
+        super().show()
+
+
+class C(A):
+    def show(self):
+        print("C")
+        super().show()
+
+
+class D(B, C):
+    def show(self):
+        print("D")
+        super().show()
+
+d = D()
+d.show()
+
+
+# D.show()
+#  ↓
+# print("D")
+#  ↓
+# super()
+#  ↓
+# B.show()
+#  ↓
+# print("B")
+#  ↓
+# super()
+#  ↓
+# C.show()
+#  ↓
+# print("C")
+#  ↓
+# super()
+#  ↓
+# A.show()
+#  ↓
+# print("A")
+
+# ⭐ Important
+
+# Notice:
+# B ka parent directly A hai.
+# But B ke andar:super().show()
+# ne C ko call kiya, A ko directly nahi.
+# Why?Because super() MRO follow karta hai.
+# MRO:D → B → C → A
+# B ke baad MRO mein C hai.That's why C execute hua.
