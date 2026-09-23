@@ -1,308 +1,133 @@
-#⭐ Topic: Exception Handling — try, except, else, finally
+# ⭐ JSON Handling
 
-try:
-    num = int(input("Enter number: "))
-    result = 10 / num
-    print(result)
+# JSON (JavaScript Object Notation) ka use applications ke beech data exchange karne ke liye bahut hota hai.
 
-except ValueError:
-    print("Please enter a valid number.")
+# Python dictionary vs JSON
+# Python: Ye Python dictionary hai.
+student = {
+    "name": "Ash",
+    "age": 24,
+    "skills": ["Python", "SQL"]
+}
 
-except ZeroDivisionError:
-    print("Cannot divide by zero.")
+# JSON mein same data:
 
-else:
-    print("Calculation successful.")
+{
+    "name": "Ash",
+    "age": 24,
+    "skills": ["Python", "SQL"]
+}
 
-finally:
-    print("Program finished.")
+# Dekhne mein same lagta hai, but important difference:
 
+# Dictionary Python ka object hai; JSON ek data format/string representation hai.
 
-# 1. try
+# 2. json module
 
-# Risky code yahan:
+import json
 
-# try:
-#     num = int(input())
-#     result = 10 / num
+# Dictionary → JSON
 
-# Python normally execute karega.
+student = {
+    "name": "Ash",
+    "age": 24
+}
 
+json_data = json.dumps(student)
 
-# 2. except
+print(json_data)
+print(type(json_data))
 
-# Agar try ke andar error aaya, matching except execute hota hai.
+# json.dumps() means: Python object → JSON string
 
-# For example:
-
-# input → "abc"
-# int("abc")
-
-# raises:
-
-# ValueError
-
-# So:
-
-# except ValueError:
-
-# execute hoga.
-
-# 3. Multiple except
-
-# Different errors ko separately handle kar sakte ho:
-
-# except ValueError:
-#     ...
-
-# except ZeroDivisionError:
-#     ...
-
-# For:
-
-# input → 0
-
-# int(0) works, but:
-
-# 10 / 0
-
-# gives ZeroDivisionError.
-
-# 4. else
-
-# else tab execute hota hai jab try successfully complete ho jaye aur koi exception na aaye.
-
-# try successful
-#       ↓
-#     else
-# 5. finally
-
-# finally almost always execute hota hai, chahe error aaye ya na aaye.
-
-# Common use:
-
-# file close karna
-# database connection cleanup
-# resources release karna
-
-# Flow:
-
-#               try
-#              /   \
-#         success   error
-#            ↓        ↓
-#          else    except
-#              \    /
-#               finally
-
-# 🎯 Interview answer
-
-# Q: What is exception handling in Python?
-
-# Exception handling is a mechanism used to handle runtime errors without abruptly terminating the program. Python provides try, except, else, and finally blocks for this purpose.
-
-try:
-    print("A")
-    x = 10 / 0
-    print("B")
-
-except ZeroDivisionError:
-    print("C")
-
-else:
-    print("D")
-
-finally:
-    print("E")
-
-print("F")
-
-# try
+# dict
 #  ↓
-# A print
+# json.dumps()
 #  ↓
-# 10 / 0
+# JSON string
+
+# 3. JSON → Python object
+
+json_data = '{"name": "Ash", "age": 24}'
+
+student = json.loads(json_data)
+
+print(student)
+print(type(student))
+
+# json.loads(): JSON string → Python object
+
+# JSON string
 #  ↓
-# ZeroDivisionError
+# json.loads()
 #  ↓
-# B ❌ skip
+# Python dict
+
+# S = String
+# dumps → Python → String
+# loads → String → Python
+
+data = {
+    "name": "Ash",
+    "age": 24
+}
+
+result = json.dumps(data)
+
+print(type(data))
+print(type(result))
+
+new_data = json.loads(result)
+
+print(type(new_data))
+print(new_data["name"])
+
+# data
 #  ↓
-# except
+# Python dictionary
+#  ↓ json.dumps()
+# JSON string
 #  ↓
-# C print
+# result
+#  ↓ json.loads()
+# Python dictionary
 #  ↓
-# else ❌ skip
+# new_data
 #  ↓
-# finally
+# new_data["name"]
 #  ↓
-# E print
-#  ↓
-# F print
-
-# One important interview point
-
-# else sirf tab execute hota hai jab try mein exception nahi aata.
-
-# finally ka purpose cleanup hota hai, aur normal exception flow mein woh execute hota hi hai—even when an exception occurs.
+# Ash
 
 
-#⭐ Next concept: raise
+# ⭐ Interview-ready
 
-def withdraw(balance, amount):
-    if amount > balance:
-        raise ValueError("Insufficient balance")
+# json.dumps()
 
-    return balance - amount
+# Converts a Python object into a JSON-formatted string.
 
-# Yahan Python automatically error nahi de raha tha. Humne condition check karke khud exception raise ki.
+# json.loads()
 
-# amount > balance?
-#        ↓
-#       YES
-#        ↓
-# raise ValueError
-#        ↓
-# function stops
-
-try:
-    balance = withdraw(5000, 7000)
-except ValueError as e:
-    print(e)
-
-# Interview answer
-
-# raise is used to explicitly trigger an exception when a specific condition occurs.
-
-def check_age(age):
-    if age < 18:
-        raise ValueError("Age must be 18 or above")
-    return "Eligible"
+# Converts a JSON-formatted string into a Python object.
 
 
-try:
-    print(check_age(16))
-except ValueError as e:
-    print(e)
+# Real projects mein tumhe ye bhi milega:
 
-# check_age(16)
-#       ↓
-# age < 18  → True
-#       ↓
-# raise ValueError(...)
-#       ↓
-# function stops
-#       ↓
-# "Eligible" ❌ nahi chalega
-#       ↓
-# except ValueError as e
-#       ↓
-# e = ValueError object
-#       ↓
-# print(e)
+# json.dump()
+# json.load()
 
-# ⭐ as e ko specifically samjho
-# except ValueError as e:
-#     print(e)
+# Difference:
 
-# Yahan e error/exception object ka reference hai.
+# dumps → string
+# loads → string
 
-# Agar hum likhte:
+# dump → file
+# load → file
 
-# except ValueError:
-#     print("Something went wrong")
+with open("hospital_data.json", "w") as file:
+    json.dump(data, file)
+# Yahan dictionary directly JSON file mein write ho rahi hai.
 
-# toh hum exception ko directly access nahi kar rahe.
+with open("student.json", "r") as file:
+    data = json.load(file)
+# Yahan JSON file ka data Python object mein aa raha hai.
 
-# as e useful hota hai jab hume actual error message/details inspect ya log karni ho.
-
-# Interview answer
-
-# raise explicitly raises an exception, while except ... as e allows us to capture the exception object and access its details.
-
-
-
-# ⭐Next: Custom Exceptions
-
-# Instead of:
-
-# raise ValueError("Age must be 18 or above")
-
-# we can create our own exception:
-class InvalidAgeError(Exception):
-    pass
-
-# Then:
-def check_age(age):
-    if age < 18:
-        raise InvalidAgeError("Age must be 18 or above")
-
-    return "Eligible"
-
-# And handle it:
-try:
-    print(check_age(16))
-
-except InvalidAgeError as e:
-    print(e)
-
-
-#   Why custom exception?
-
-# Generic ValueError se pata chalta hai ki value invalid hai.
-
-# Custom:
-
-# InvalidAgeError
-
-# se code ka meaning immediately clear hota hai.
-
-# Interview line:
-
-# Custom exceptions allow us to create application-specific error types that make error handling more meaningful and organized.
-
-
-class InsufficientBalanceError(Exception):
-    pass
-
-
-def withdraw(balance, amount):
-    if amount > balance:
-        raise InsufficientBalanceError("Insufficient balance")
-
-    return balance - amount
-
-
-try:
-    balance = withdraw(5000, 7000)
-    print(balance)
-
-except InsufficientBalanceError as e:
-    print(e)
-
-print("Transaction completed")
-
-
-# withdraw(5000, 7000)
-#         ↓
-# 7000 > 5000 → True
-#         ↓
-# raise InsufficientBalanceError
-#         ↓
-# function stops
-#         ↓
-# except catches exception
-#         ↓
-# e = exception object
-#         ↓
-# print(e)
-#         ↓
-# Insufficient balance
-#         ↓
-# Transaction completed
-
-
-# ⭐ Why custom exception?
-
-# Tum interview mein bol sakti ho:
-
-# Custom exceptions make application-specific errors easier to identify, handle, and maintain.
