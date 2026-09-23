@@ -1,133 +1,82 @@
-# ⭐ JSON Handling
-
-# JSON (JavaScript Object Notation) ka use applications ke beech data exchange karne ke liye bahut hota hai.
-
-# Python dictionary vs JSON
-# Python: Ye Python dictionary hai.
-student = {
-    "name": "Ash",
-    "age": 24,
-    "skills": ["Python", "SQL"]
-}
-
-# JSON mein same data:
-
-{
-    "name": "Ash",
-    "age": 24,
-    "skills": ["Python", "SQL"]
-}
-
-# Dekhne mein same lagta hai, but important difference:
-
-# Dictionary Python ka object hai; JSON ek data format/string representation hai.
-
-# 2. json module
-
 import json
+# ⭐ JSON File Handling
 
-# Dictionary → JSON
+# ⭐ JSON file mein data read karna 
+# Suppose student.json file mein ye data hai:
 
-student = {
-    "name": "Ash",
-    "age": 24
-}
-
-json_data = json.dumps(student)
-
-print(json_data)
-print(type(json_data))
-
-# json.dumps() means: Python object → JSON string
-
-# dict
-#  ↓
-# json.dumps()
-#  ↓
-# JSON string
-
-# 3. JSON → Python object
-
-json_data = '{"name": "Ash", "age": 24}'
-
-student = json.loads(json_data)
-
-print(student)
-print(type(student))
-
-# json.loads(): JSON string → Python object
-
-# JSON string
-#  ↓
-# json.loads()
-#  ↓
-# Python dict
-
-# S = String
-# dumps → Python → String
-# loads → String → Python
-
-data = {
-    "name": "Ash",
-    "age": 24
-}
-
-result = json.dumps(data)
-
-print(type(data))
-print(type(result))
-
-new_data = json.loads(result)
-
-print(type(new_data))
-print(new_data["name"])
-
-# data
-#  ↓
-# Python dictionary
-#  ↓ json.dumps()
-# JSON string
-#  ↓
-# result
-#  ↓ json.loads()
-# Python dictionary
-#  ↓
-# new_data
-#  ↓
-# new_data["name"]
-#  ↓
-# Ash
-
-
-# ⭐ Interview-ready
-
-# json.dumps()
-
-# Converts a Python object into a JSON-formatted string.
-
-# json.loads()
-
-# Converts a JSON-formatted string into a Python object.
-
-
-# Real projects mein tumhe ye bhi milega:
-
-# json.dump()
-# json.load()
-
-# Difference:
-
-# dumps → string
-# loads → string
-
-# dump → file
-# load → file
-
-with open("hospital_data.json", "w") as file:
-    json.dump(data, file)
-# Yahan dictionary directly JSON file mein write ho rahi hai.
+# {
+#     "name": "Ash",
+#     "age": 24,
+#     "skills": ["Python", "SQL"]
+# }
 
 with open("student.json", "r") as file:
     data = json.load(file)
-# Yahan JSON file ka data Python object mein aa raha hai.
 
+print(data["name"])
+print(data["skills"])
+
+# student.json
+#      ↓
+# open(..., "r")
+#      ↓
+# json.load(file)
+#      ↓
+# Python dictionary
+#      ↓
+# data
+#      ↓
+# data["name"]
+#      ↓
+# Ash
+
+# ⭐ JSON file mein data write karna
+
+import json
+
+student = {
+    "name": "Ash",
+    "age": 24,
+    "skills": ["Python", "SQL"]
+}
+
+with open("student.json", "w") as file:
+    json.dump(student, file, indent=4)
+
+#⭐ indent=4 ka purpose sirf JSON ko human-readable / nicely formatted banana hai.
+
+# Python dictionary
+#        ↓
+# json.dump()
+#        ↓
+# JSON file
+
+# 🎯 Challenge
+# Assume students.json contains:
+# [
+#     {"name": "Ash", "age": 24},
+#     {"name": "Rahul", "age": 22},
+#     {"name": "Priya", "age": 25}
+# ]
+
+import json
+
+with open("students.json", "r") as file:
+    students = json.load(file)
+
+print(type(students))
+print(students[0]["name"])
+print(students[2]["age"])
+
+# print(type(students))
+# Output: <class 'list'>
+
+# Because the JSON starts with:
+# [
+#     {...},
+#     {...},
+#     {...}
+# ]
+# [ ] means JSON array → Python list.
+
+# students is a list containing multiple dictionaries, where each dictionary represents one student's data using key-value pairs.
