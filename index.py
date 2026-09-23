@@ -1,82 +1,62 @@
-import json
-# ⭐ JSON File Handling
+# ⭐ Next Python topic: Comprehensions
 
-# ⭐ JSON file mein data read karna 
-# Suppose student.json file mein ye data hai:
+# ⭐List Comprehension
+numbers = [1, 2, 3, 4, 5]
 
-# {
-#     "name": "Ash",
-#     "age": 24,
-#     "skills": ["Python", "SQL"]
-# }
+squares = []
 
-with open("student.json", "r") as file:
-    data = json.load(file)
+for num in numbers:
+    squares.append(num * num)
 
-print(data["name"])
-print(data["skills"])
+print(squares)
 
-# student.json
-#      ↓
-# open(..., "r")
-#      ↓
-# json.load(file)
-#      ↓
-# Python dictionary
-#      ↓
-# data
-#      ↓
-# data["name"]
-#      ↓
-# Ash
+# Same thing list comprehension se:
 
-# ⭐ JSON file mein data write karna
+numbers = [1, 2, 3, 4, 5]
 
-import json
+squares = [num * num for num in numbers]
+# For every num in numbers, calculate num * num and put the result into a new list.
 
-student = {
-    "name": "Ash",
-    "age": 24,
-    "skills": ["Python", "SQL"]
-}
-
-with open("student.json", "w") as file:
-    json.dump(student, file, indent=4)
-
-#⭐ indent=4 ka purpose sirf JSON ko human-readable / nicely formatted banana hai.
-
-# Python dictionary
-#        ↓
-# json.dump()
-#        ↓
-# JSON file
+print(squares)
 
 # 🎯 Challenge
-# Assume students.json contains:
-# [
-#     {"name": "Ash", "age": 24},
-#     {"name": "Rahul", "age": 22},
-#     {"name": "Priya", "age": 25}
-# ]
+numbers = [1, 2, 3, 4, 5, 6]
 
-import json
+even_numbers = []
 
-with open("students.json", "r") as file:
-    students = json.load(file)
+for num in numbers:
+    if num % 2 == 0:
+        even_numbers.append(num)
 
-print(type(students))
-print(students[0]["name"])
-print(students[2]["age"])
+print(even_numbers)
 
-# print(type(students))
-# Output: <class 'list'>
+# list comprehension is:
 
-# Because the JSON starts with:
-# [
-#     {...},
-#     {...},
-#     {...}
-# ]
-# [ ] means JSON array → Python list.
+numbers = [1, 2, 3, 4, 5, 6]
+even_numbers = [num for num in numbers if num % 2 == 0]
+print(even_numbers)
 
-# students is a list containing multiple dictionaries, where each dictionary represents one student's data using key-value pairs.
+
+# [what_to_store  for  variable  in  collection  if  condition]
+
+# 1. What is Comprehension in Python?
+
+# Comprehension is a concise way to create a new collection in Python using an existing iterable, usually with a loop and an optional condition.
+
+# 2. What is List Comprehension?
+
+# List comprehension is a concise way to create a new list by applying an expression to each item of an iterable, optionally filtering items using a condition.
+#List comprehension is a concise way to create a new list by applying an expression to items from an iterable, optionally with a condition.
+
+numbers = [1, 2, 3, 4, 5, 6]
+even_numbers_squares = [num*num for num in numbers if num % 2 == 0]
+print(even_numbers_squares)
+
+# ⭐ Important distinction
+
+# Comprehension mein:
+
+# [num * num for num in numbers if num % 2 == 0]
+# for → kis data par iterate karna hai
+# if → kaunse elements select karne hain
+# num * num → selected element ke saath kya karna hai 
