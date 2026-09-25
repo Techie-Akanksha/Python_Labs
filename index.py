@@ -1,44 +1,37 @@
-# ⭐Topic - map()
+# ⭐Topic - filter()
 
-# map() ka purpose:
-# Iterable ke har element par ek function apply karna.
+# map() = transform
+# filter() = select
 
-numbers = [1, 2, 3, 4]
+numbers = [1, 2, 3, 4, 5, 6]
 
-squares = list(map(lambda x: x * x, numbers))
+even = list(filter(lambda x: x % 2 == 0, numbers))
 
-print(squares)
-
-# numbers
-#  ↓
-# 1 → lambda → 1
-# 2 → lambda → 4
-# 3 → lambda → 9
-# 4 → lambda → 16
-#  ↓
-# [1, 4, 9, 16]
+print(even)
 
 # 🎤 Interview explanation
-# map() applies a given function to every item of an iterable and returns a map object containing the results. We often convert it to a list when we want to see or store the results as a list.
+# filter() selects elements from an iterable based on a condition. It returns a filter object containing the elements for which the function returns True.
 
-# Quick challenge
-# Convert this using map() + lambda:
-numbers = [2, 4, 6, 8]
-# Expected:[4, 8, 12, 16]
+# map()    → change/transform every item
+# filter() → select some items
 
-calculation = list(map(lambda x:x*2, numbers))
+
+# ⚡ Quick challenge
+# Given:
+numbers = [10, 15, 20, 25, 30, 35]
+# Using filter() + lambda, get numbers divisible by 10.Expected:[10, 20, 30]
+calculation = list(filter(lambda x: x % 10 == 0, numbers))
 print(calculation)
 
-# numbers = [2, 4, 6, 8]
-
-# 2 → x*2 → 4
-# 4 → x*2 → 8
-# 6 → x*2 → 12
-# 8 → x*2 → 16
-
-# → map object
-# → list()
-# → [4, 8, 12, 16]
-
 # 🎤 Interview explanation
-# map() applies a function to every element of an iterable and returns a map object containing the transformed values.
+# filter() takes a function and an iterable, tests each element against the condition, and returns only the elements for which the function returns True.
+
+# 🔥 Lock this difference
+# Function	Purpose
+# map()	Transform every element
+# filter()	Select elements based on condition
+# lambda	Small anonymous function
+
+# Example:
+map(lambda x: x * 2, numbers) # → change values
+filter(lambda x: x % 10 == 0, numbers) # → select values
