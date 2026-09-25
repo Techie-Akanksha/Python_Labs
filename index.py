@@ -1,5 +1,5 @@
 # ⭐Topic - Modules & Packages
-
+# ⭐ Modules
 # What is a Module?
 # A module is simply a Python file (.py) containing reusable code.
 
@@ -48,3 +48,28 @@
 # Now you can directly use add().
 # Interview answer
 # A module is a Python file containing reusable code such as functions, classes, and variables. Modules help organize code and promote code reuse.
+
+# ⭐ Package
+# A package is a directory used to organize multiple modules.
+
+# myproject/
+# │
+# ├── main.py
+# │
+# └── utilities/
+#     ├── __init__.py
+#     ├── calculator.py
+#     └── validator.py
+
+# Here:
+# - utilities → package
+# - calculator.py → module
+# - validator.py → module
+
+# you can import 
+# from utilities.calculator import add
+
+# Interview answer
+# A package is a directory that organizes related Python modules into a structured unit.
+
+
