@@ -73,3 +73,73 @@
 # A package is a directory that organizes related Python modules into a structured unit.
 
 
+# ⭐ Very Important: __name__
+
+# You'll commonly see:
+# if __name__ == "__main__":
+#     print("Program started")
+
+# Suppose calculator.py contains:
+# def add(a, b):
+#     return a + b
+
+
+# if __name__ == "__main__":
+#     print(add(10, 20))
+
+# If you run: python calculator.py
+
+# Python sets : __name__ = "__main__"
+
+# So the code executes.
+# But if another file does: import calculator
+# then: __name__ = "calculator"
+
+# So the code inside: if __name__ == "__main__": 
+# doesn't execute.
+
+
+# Interview answer
+# if __name__ == "__main__": is used to ensure that certain code runs only when the Python file is executed directly, not when it is imported as a module.
+
+# 🎯 Quick Challenge
+# Predict the output:
+
+# # calculator.py
+
+# def add(a, b):
+#     return a + b
+
+# if __name__ == "__main__":
+#     print("Calculator started")
+
+# Then another file:
+
+# # main.py
+
+# import calculator
+
+# print(calculator.add(5, 3))
+
+
+# Your execution flow was correct:
+# main.py
+#    ↓
+# import calculator
+#    ↓
+# calculator module loaded
+#    ↓
+# __name__ = "calculator"
+#    ↓
+# if block skipped
+#    ↓
+# calculator.add(5, 3)
+#    ↓
+# 8
+
+
+
+# 🎤 Interview Question
+# Q: Why do we use if __name__ == "__main__":?
+# Your answer can be:
+# "if __name__ == '__main__': ensures that a block of code runs only when the Python file is executed directly, and not when the file is imported as a module."
