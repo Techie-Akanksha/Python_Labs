@@ -60,3 +60,55 @@ print(even_numbers_squares)
 # for → kis data par iterate karna hai
 # if → kaunse elements select karne hain
 # num * num → selected element ke saath kya karna hai 
+
+
+# ⭐ Dictionary Comprehension
+squares = {num: num * num for num in numbers}
+
+# List comprehension
+# → [value, value, value]
+
+# Dictionary comprehension
+# → {key: value, key: value}
+
+# 🎯 Challenge
+names = ["Ash", "Rahul", "Priya"]
+values = [3,5,5]
+key_value = {name : value for name,value in zip(names,values)}
+print(key_value)
+
+names = ["A", "B", "C"]
+scores = [80, 90, 70]
+
+result = {name: score for name, score in zip(names, scores)}
+print(result)
+
+# 🧠 zip() ka flow
+# names          values
+#   ↓              ↓
+#  Ash     +       3
+#  Rahul   +       5
+#  Priya   +       5
+#        ↓
+#      zip()
+#        ↓
+# (Ash, 3)
+# (Rahul, 5)
+# (Priya, 5)
+
+#⭐ Next: Set Comprehension
+# Set automatically duplicate values remove karta hai.
+
+numbers = [1, 2, 2, 3, 3, 4]
+
+squares = {num * num for num in numbers}
+
+print(squares)
+
+# Challenge
+
+numbers = [1, 2, 2, 3, 4, 4, 5]
+
+result = {num for num in numbers if num % 2 == 0}
+
+print(result)
