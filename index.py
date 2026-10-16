@@ -1,200 +1,301 @@
 #Topic - Rest API
 import requests
 
-# ⭐ Authentication + Headers
-# Body = actual data
-# Headers = data ke baare mein information aur request ki additional details
+# ⭐ Lesson: REST API design
 
-# Interview-ready
-# Question: What is the difference between request headers and the request body?
+#⭐  1. Resource-based URLs
 
-# Answer:
-# "The request body contains the actual data sent to the server, while request headers provide metadata about the request, such as the content type, accepted response format, and authentication information."
+# REST APIs mein URLs ko generally resources ke around design kiya jata hai, jaise meetings, users, documents aur tasks.
+
+# Endpoint	Purpose
+
+# GET /meetings	Saari meetings retrieve karna
+# GET /meetings/101	Meeting 101 retrieve karna
+# POST /meetings	Nayi meeting create karna
+# DELETE /meetings/101	Meeting 101 delete karna
 
 
-# ⭐ Common Headers
-# 1. Content-Type
-# Tum already jaanti ho.
-# Content-Type: application/json
+# Notice karo: URL mein resource ka naam meetings hai, aur HTTP method batata hai ki us resource ke saath kya action karna hai.
 
-# Meaning
-# "My request body JSON format mein hai."
+# Less ideal design:
+# GET /getMeeting?id=101
 
-# 2. Accept
-# Accept: application/json
+# More REST-style design:
+# GET /meetings/101
 
-# Meaning
-# "Mujhe response JSON format mein chahiye."
+# Dono designs technically kaam kar sakte hain, lekin second design resource-oriented API conventions ko follow karta hai.
 
-# Python mein Headers
+# ⭐ 2. Statelessness  
+
+# REST ka ek important principle hai statelessness.
+
+# Simple meaning: har request mein server ke paas us request ko process karne ke liye required context hona chahiye. Server requests ke beech client ki conversational session state ko implicitly yaad rakhne par depend nahi karta.
+
+# Example:
+# - Request 1: GET /meetings/101
+# - Request 2: GET /meetings/102
+
+# Har request independently process honi chahiye. Agar authentication required hai, toh har request mein valid token bhejna pad sakta hai.
+
+# Interview answer: “Statelessness means each request must contain the information needed to process it, without relying on stored client session context from a previous request.”
+
+
+# ⭐ 1. REST principles answer review
+# Question |	Your answer |	Reason
+# Q1: Meeting 205 retrieve karna |	B — GET /meetings/205	|  Resource URL meeting identify karta hai; GET retrieval indicate karta hai.
+# Q2: Stateless authentication |B — Har request mein required token	Server | ko har independent request authenticate karne ke liye required credentials milne chahiye.
+# Q3: Same URL, different methods |	A — Yes	| GET /meetings list retrieve karta hai, jabki POST /meetings creation request karta hai.
+
+# Ek nuance: statelessness ka matlab yeh nahi ki server kabhi data store nahi kar sakta. Server meetings aur users ka persistent data store kar sakta hai; principle client ki request/session context par implicitly depend na karne ka hai.
+
+
+# ⭐ 2. Safe methods vs idempotent methods
+
+# Safe method: Request ka intended effect server ke resource state ko change karna nahi hota.
+# A safe HTTP method is a method that is intended to retrieve data without changing the server's state.
+# Simple words mein: server se data lena, bina server ka data change karne ke.
+
+# Idempotent method: Same request repeat karne se intended final resource state wahi rehti hai.
+# An idempotent method is a method where making the same request multiple times has the same intended effect on the server as making it once.
+# Simple words mein: same request 1 baar bhejo ya 10 baar, server ki final state same honi chahiye.
+
+# Method	Safe?	Idempotent?
+# GET	     Yes	Yes
+# HEAD	     Yes	Yes
+# PUT	      No	Yes
+# DELETE	  No	Yes
+# POST	      No	Not necessarily
+
+# DELETE ka example: resource pehli request mein delete ho sakta hai. Repeat request par 404 aa sakta hai, lekin final state mein resource deleted hi rehta hai. Isliye DELETE idempotent hai, chahe response same na ho.
+
+# 3. Retry behavior — request dobara kab bhejni chahiye?
+
+# Maan lo MeetMind AI ek meeting summary generate karne ke liye backend ko request bhejta hai.
+
+# Network timeout aa gaya. Ab tumhe nahi pata ki server ne request process ki thi ya nahi.
+
+# GET request
+# Generally retry karna safer hota hai, kyunki GET ka intended purpose data retrieve karna hai aur woh safe/idempotent hota hai.
+
+# POST request
+# Blind retry risky ho sakta hai. Agar pehli request process ho chuki thi, toh doosri request duplicate resource ya action create kar sakti hai.
+
+# Production APIs mein retries carefully configure ki jaati hain. Payment ya resource creation jaise operations ke liye API-supported idempotency key duplicate processing ko prevent karne mein help kar sakti hai. Har POST retry unsafe nahi hota, lekin operation ki semantics samajhna zaroori hai.
+
+
+import requests
+
+url = "https://jsonplaceholder.typicode.com/posts/1"
+
+for attempt in range(2):
+    try:
+        response = requests.get(url, timeout=5)
+        response.raise_for_status()
+        print(response.json()["title"])
+        break
+
+    except requests.exceptions.Timeout:
+        print("Request timed out.")
+
+        if attempt == 1:
+            print("Maximum attempts reached.")
+
+# Is example mein maximum do attempts hain. Timeout ke baad hi loop next attempt karta hai. Dhyan rahe, yeh basic learning example hai; production retry logic mein backoff, retryable errors aur retry limits ko carefully handle karna chahiye.
+
+# Interview answer: “I consider HTTP method semantics before retrying a failed request. GET requests are generally safe to retry, while POST retries may cause duplicate actions unless the API supports appropriate idempotency controls.”
+
+
+# Q1. Repeating PUT /users/10 with the same address
+
+# PUT is idempotent. Agar request baar-baar bhejo aur har baar address "Pune" set karo, final state same rahegi. Iska matlab ye nahi ki har response identical hoga—sirf intended final state same honi chahiye.
+
+
+
+# Q2. POST request timeout ho gaya
+
+# Timeout ka matlab ye nahi ki server ne request process nahi ki. Ho sakta hai server ne record create kar diya ho, lekin response tumhare client tak nahi aaya. Blindly POST retry karne se duplicate record ban sakta hai.
+
+
+
+# Q3. Safe and idempotent method
+
+# GET ka intended purpose data retrieve karna hai, resource state change karna nahi. Isliye GET generally safe bhi hai aur idempotent bhi.
+
+
+# Concept	Simple meaning	Example
+# Safe	Intended resource state change nahi karna	GET /users/10
+# Idempotent	Same request repeat karne se final intended state same rahe	PUT /users/10
+# Retry	Failure/timeout ke baad request dobara bhejna	GET ko retry karna
+
+# Interview-ready:
+# “I consider HTTP method semantics before retrying a failed request. GET is generally safe and idempotent, while POST retries may create duplicate resources unless the API supports appropriate idempotency controls.”
+
+# ⭐ Lesson: Authentication + environment variables
+
+# Ab hum seekhenge ki Python se protected API ko request kaise bhejte hain aur API token ko code mein hardcode karne se kaise bachte hain.
+
+# ⭐ Authentication header
+# GET /meetings
+# Server chahta hai ki request ke saath valid access token bhi aaye. Python mein hum headers= use kar sakte hain.
+
+import requests
+
+url = "https://api.example.com/meetings"
+
 headers = {
-    "Authorization": "Bearer my_secret_token",
+    "Authorization": "Bearer YOUR_ACCESS_TOKEN",
     "Accept": "application/json"
 }
-url = "https://api.example.com/data"
-response = requests.get(url, headers=headers)
 
-# ⭐ Authentication
-# — server ko kaise pata chalega ki request kiski hai?
-
-# Authentication ka matlab hai client ki identity verify karna. Authorization alag concept hai: verified client ko kis resource ka access allowed hai.
-
-
-# Client
-# Request bhejta hai, credentials ya token ke saath.
-
-# Server
-# Identity/token verify karta hai, phir permissions check kar sakta hai.
-
-# Response
-# Allowed ho toh result; otherwise appropriate error response.
-
-# Common authentication methods
-# - API key: Request ke saath secret key bheji jaati hai.
-# - Bearer token: Authorization header mein token bheja jata hai.
-# - Session/cookie: Server-managed login session ko identify karne ke liye use ho sakta hai.
-
-# import requests
-
-# url = "https://api.example.com/meetings"
-
-# headers = {
-#     "Authorization": "Bearer YOUR_ACCESS_TOKEN"
-# }
-
-# response = requests.get(
-#     url,
-#     headers=headers,
-#     timeout=5
-# )
-
-# response.raise_for_status()
-# print(response.status_code)
-
-# Interview answer: “Authentication verifies the identity of a client, while authorization determines which resources or actions that client is permitted to access.”
-
-#⭐ HTTP headers
-#  — request ke saath extra information.Headers request ya response ke baare mein metadata carry karte hain.
-
-# Teen important headers:
-# Header	Purpose
-# Content-Type	Request body kis format mein hai
-# Accept	Client response mein kaunsa format prefer karta hai
-# Authorization	Credentials/token bhejne ke liye
-
-headers = {
-    "Content-Type": "application/json",
-    "Accept": "application/json"
-}
-
-response = requests.post(
-    "https://jsonplaceholder.typicode.com/posts",
+response = requests.get(
+    url,
     headers=headers,
-    json={
-        "title": "MeetMind AI",
-        "body": "Meeting summary test",
-        "userId": 1
-    },
     timeout=5
 )
 
 response.raise_for_status()
-print(response.status_code)
-print(response.json())
-
-# Yahan json= already Content-Type: application/json automatically set karta hai, isliye Content-Type manually dena usually unnecessary hai. Example ka purpose headers ka role samjhana hai.
-# Yaad rakho:
-# - json= → data bhejne ke liye.
-# - headers= → request metadata aur authentication jaise details bhejne ke liye.
-# - params= → URL query parameters ke liye.
-# - timeout= → waiting ko limit karne ke liye.
-
-# Interview answer: “HTTP headers carry metadata about a request or response. Content-Type describes the request body format, while Accept indicates the response formats the client can process.”
-
-
-# ⭐Response validation
-# Agar API request successful ho, toh kya iska matlab hai ki response data bhi correct hai?
-# Nahi. HTTP 200 OK milne ke baad bhi response mein unexpected format, empty data, ya missing fields ho sakte hain. Isliye response ko validate karna important hai.
-
-
-# Concept 1 — HTTP success vs data validation
-# HTTP validation
-# response.raise_for_status()
-# Check karta hai ki response HTTP 4xx/5xx error toh nahi hai.
-
-# Data validation
-# response.json() aur Python checks
-# Check karte hain ki data expected type aur structure mein hai ya nahi.
-
-response.raise_for_status()
 data = response.json()
 
-if isinstance(data, list):
-    print("Received a list")
+print(data)
+
+# Authorization batata hai ki client authentication credentials bhej raha hai.
+
+# Bearer token-based authentication mein commonly use hone wala scheme hai.
+
+# Accept: application/json batata hai ki client JSON response prefer karta hai.
+
+# api.example.com ek placeholder hai; ye code actual API token aur valid endpoint ke bina successful request nahi karega.
+
+# ⭐Token ko environment variable mein rakhna
+
+# Step A: Windows PowerShell mein temporary variable set karo
+# $env:API_TOKEN = "your_actual_token"
+# Ye variable current PowerShell session ke liye set hoga. Real token ko public chat ya GitHub par share mat karna.
+
+# Step B: Python mein variable read karo
+import os
+
+token = os.getenv("API_TOKEN")
+
+if not token:
+    print("API token is missing")
 else:
-    print("Unexpected response format")
+    print("API token is configured")
 
-# Yahan isinstance(data, list) check karta hai ki data Python list hai ya nahi. Agar API list ke badle dictionary return kare, toh tum us difference ko detect kar sakte ho.
+# os.getenv("API_TOKEN") environment variable ki value deta hai. Agar variable set nahi hai, to default behaviour mein None milta hai.
 
-# Concept 2 — Empty response data handle karna
-# Ek valid response mein empty list bhi ho sakti hai. Empty list zaroori nahi ki API failure ho.
+# Concept 3 — Dono ko combine karna
+# Ab token ko request header mein safely use karte hain.
 
-if not data:
-    print("No records found")
+import os
+import requests
+
+token = os.getenv("API_TOKEN")
+
+if not token:
+    print("API token is missing")
 else:
-    print("Records found:", len(data))
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Accept": "application/json"
+    }
 
-# Yeh code empty list [] aur other falsy values ke liye message print karega. Isliye pehle expected data type validate karna achha rahega, especially jab API ka response format fixed ho.
+    try:
+        response = requests.get(
+            "https://api.example.com/meetings",
+            headers=headers,
+            timeout=5
+        )
 
-# Concept 3 — Status codes ko context mein samajhna
-# Status	Meaning	Typical situation
-# 200 OK	Request successful	Data retrieve kiya
-# 201 Created	Resource creation report hui	POST se resource create hua
-# 204 No Content	Request successful, response body nahi	DELETE ya another successful operation
-# 400 Bad Request	Request invalid	Required input missing ya malformed
-# 401 Unauthorized	Authentication required/invalid	Token missing ya invalid
-# 403 Forbidden	Permission denied	User ko action allowed nahi
-# 404 Not Found	Resource nahi mila	Meeting ID exist nahi karti
-# 500 Internal Server Error	Server-side failure	Backend mein unexpected error
+        response.raise_for_status()
+        print(response.json())
 
+    except requests.exceptions.RequestException as error:
+        print("Request failed:", error)
+
+# Notice: f"Bearer {token}" environment variable ki value ko header string mein insert karta hai. Hum token ko code mein directly store nahi kar rahe.
+
+# Production projects mein .env file aur python-dotenv bhi use kar sakte hain. .env ko .gitignore mein rakhna zaroori hai; environment variables secrets ko manage karne mein help karte hain, lekin application logs ya public repositories mein token print nahi karna chahiye.
+
+import os
+import requests
+token = os.getenv("API_KEY")
+if not token:
+       print("API token is missing")
+else:
+    header = {
+          "Authorization": f"Bearer {token}",
+          "Accept": "application/json"
+      }
+
+    for attempt in range(2):
+        try:
+            response = requests.get(
+                    "https://api.example.com/meetings",
+                    headers=header,
+                    timeout=5
+            )
+        
+            response.raise_for_status()
+            print(response.json()) 
+            break
+
+        except requests.exceptions.RequestException as error:
+            print("Request failed:", error)
+
+            if attempt == 1:
+                    print("Maximum attempts reached.")
+
+
+# Retry logic correctly kaise kaam karta hai?
+
+# Retry ka matlab hai failed request ko limited number of times dobara bhejna. Lekin har failure temporary nahi hota.
+
+# Error / situation |	Retry karna chahiye? |		Reason
+# Temporary timeout |		Usually, limited retries |		Server slow ho sakta hai ya network temporarily busy ho sakta hai
+# Connection error |	Sometimes |		Network/server temporarily unavailable ho sakta hai
+# 401 Unauthorized |	Usually nahi |		Token missing ya invalid hai; pehle credentials fix karo
+# 403 Forbidden |	Usually nahi |		Permission nahi hai; same request repeat karne se permission nahi milegi
+# 404 Not Found |	Usually nahi |		Resource ya endpoint nahi mila; URL/resource check karo
+# 500 Internal Server Error |	Sometimes |		Server-side problem temporary ho sakti hai
+# 429 Too Many Requests |	API instructions ke according |		Rate limit ke liye Retry-After header respect karna pad sakta hai
+
+# Ye general guidelines hain. Actual retry policy API documentation aur operation par depend karti hai.
+
+# Isliye timeout ka matlab hamesha ye nahi ki server ne request process nahi ki.
+
+# GET requests ko generally retry karna safer hota hai, jabki POST ke liye duplicate actions ka risk check karna zaroori hai. Agar API idempotency keys support karti hai, to unka use duplicate creation se bachane mein help kar sakta hai.
+
+# Iska issue ye hai ki RequestException bahut broad hai. Ismein timeout, connection errors aur HTTP errors jaise different failures aa sakte hain. Tum sabko same tarah treat kar rahe ho.
+
+# Learning ke liye pehle sirf timeout ko retry karna seekhte hain. Isse tumhe specific exceptions handle karne ki practice hogi.
 
 import requests
-url = "https://jsonplaceholder.typicode.com/posts"
-try:
-    response = requests.get(
-        url,
-        params= {
-            "userId" : 1
-        },
-        timeout = 5
-    )
-    response.raise_for_status()
-    data = response.json()
-    if isinstance(data, list):
-        print("Received list")
-        if not data:
-            print("No posts found")
-        else:
-            print("Total Posts found: ", len(data))
-            print("Post title: ",data[0]["title"])
-    else:
-        print("Unexpected response format")
+
+url = "https://jsonplaceholder.typicode.com/posts/1"
+
+for attempt in range(2):
+    try:
+        response = requests.get(url, timeout=5)
+        response.raise_for_status()
+
+        print(response.json()["title"])
+        break
+
+    except requests.exceptions.Timeout:
+        print("Request timed out.")
+
+        if attempt == 1:
+            print("Maximum attempts reached.")
+
+    except requests.exceptions.RequestException as error:
+        print("Request failed:", error)
+        break
 
 
-except requests.exceptions.Timeout:
-    print("The required timed out.")
-
-except requests.exceptions.HTTPError as error:
-    print("Http error occured: ", error)
-
-except requests.exceptions.ConnectionError:
-    print("Could not connect to the server ")
-    
-except requests.exceptions.RequestException as error:
-    print("Request failed ", error)
+# Q4 Kya har RequestException ko retry karna good production practice hai? Apne words mein reason batao.
+# “We should not retry every API error. Temporary failures such as timeouts may be retried with a limit, while errors such as 401 or 403 usually require fixing authentication or permissions. POST requests also need special care because retries can create duplicate resources.”
 
 
-# Interview-ready
-# “I implemented a GET request with query parameters and timeout handling, validated the response type, handled empty results, and added exception handling for HTTP and connection-related failures.”
-
-# “I implemented response validation to handle unexpected data types and empty results safely, and organized exception handlers from specific errors to the general request exception.”
+# Q3. Kya POST timeout hone par blindly retry karna safe hai? Ek line mein reason bhi batao.
+# “A POST request may have been processed by the server even if the client receives a timeout. Retrying it blindly can create duplicate resources, so I check the API's retry and idempotency support before retrying.”
