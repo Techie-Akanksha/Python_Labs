@@ -103,3 +103,140 @@ def home():
 
 # Q3. app = FastAPI()
 # Correct. It creates the application instance on which we register routes.
+
+# Lesson 2: Routes, Path Parameters and Query Parameters
+
+# Concept 1: Multiple routes
+# An API can provide multiple endpoints for different purposes.
+
+from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get("/")
+def home():
+    return {"message": "Welcome"}
+
+@app.get("/about")
+def about():
+    return {"message": "This is my first API"}
+
+# Here:
+# - GET / calls the home() function.
+# - GET /about calls the about() function.
+# Each route connects an HTTP method and URL to a Python function.
+
+# Concept 2: Path parameters
+# Path parameters identify a particular resource.
+
+@app.get("/users/{user_id}")
+def get_user(user_id: int):
+    return {"user_id": user_id}
+
+# If you visit /users/5, FastAPI passes 5 to the function and returns:
+# {
+#   "user_id": 5
+# }
+
+# Notice user_id: int. This is a type hint. FastAPI uses it to validate the input and convert valid values to integers.
+
+# If you visit /users/abc, FastAPI returns a validation error, usually with status code 422, because abc is not a valid integer.
+
+# Concept 3: Query parameters
+# Query parameters pass optional filters or extra information in the URL.
+
+@app.get("/products")
+def get_products(category: str = "all", limit: int = 10):
+    return {
+        "category": category,
+        "limit": limit
+    }
+
+# Try these URLs:
+
+# URL   |	Result
+# /products   |		category = all, limit = 10
+# /products?category=books   |		category = books, limit = 10
+# /products?category=books&limit=5   |	category = books, limit = 5
+
+# The ? starts the query string, and & separates multiple query parameters.
+
+# Remember the difference:
+# - Path parameter: identifies which resource you want, such as /users/5.
+# - Query parameter: filters or modifies the result, such as /products?limit=5.
+
+# Interview-ready explanation:
+# “Path parameters identify a specific resource, while query parameters are commonly used to filter, sort, or limit API results. FastAPI uses Python type hints to validate incoming parameters.”
+
+from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get("/")
+def home():
+    return {"message": "Welcome"}
+
+@app.get("/about")
+def about():
+    return {"message": "This is my first API"}
+
+@app.get("/students/{student_id}")
+def get_user(student_id: int):
+    return {"student_id": student_id}
+
+@app.get("/courses")
+def get_courses(course: str = "Python", limit: int = 5):
+    return{
+        "course": course,
+        "limit" : limit
+    }
+
+
+# Code review
+# GET / and GET /about
+# Both routes return the expected dictionaries.
+
+
+# GET /students/{student_id}
+# Correct path parameter and integer type hint. Your function name get_user is valid, though get_student would describe its purpose more clearly.
+
+
+# GET /courses
+# Correct query parameters, default values, and response dictionary. Your spacing around the return dictionary is also valid Python.
+
+# 2. Test your API in the browser
+
+# If you haven't started your server, run this in your activated virtual environment:
+
+# fastapi dev main.py
+
+# Open http://127.0.0.1:8000/docs and test these endpoints.
+
+# Try these requests
+# GET
+# /students/25
+
+# Expected response: {"student_id": 25}
+
+
+# GET
+# /courses
+# Expected defaults: course = Python, limit = 5.
+
+
+# GET
+# /courses?course=SQL&limit=3
+# Expected response: {"course": "SQL", "limit": 3}
+
+
+# 3. One important concept: what happens internally?
+# When a request reaches /students/25, the execution flow is:
+# 1. FastAPI matches the URL with the registered route.
+# 2. It extracts "25" from the URL.
+# 3. It validates and converts "25" to the integer 25.
+# 4. It calls get_user(student_id=25).
+# 5. The returned Python dictionary is serialized into a JSON response.
+# This is useful for interviews because it explains more than just the syntax.
+
+# Interview-ready answer:
+# “FastAPI maps incoming HTTP requests to route functions. It extracts path and query parameters, validates them using Python type hints, executes the corresponding function, and serializes the returned data into a response.”
