@@ -167,7 +167,7 @@ def get_products(category: str = "all", limit: int = 10):
 
 # Interview-ready explanation:
 # “Path parameters identify a specific resource, while query parameters are commonly used to filter, sort, or limit API results. FastAPI uses Python type hints to validate incoming parameters.”
-
+# ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐
 from fastapi import FastAPI
 
 app = FastAPI()
@@ -190,6 +190,7 @@ def get_courses(course: str = "Python", limit: int = 5):
         "course": course,
         "limit" : limit
     }
+# ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐
 
 
 # Code review
@@ -240,3 +241,144 @@ def get_courses(course: str = "Python", limit: int = 5):
 
 # Interview-ready answer:
 # “FastAPI maps incoming HTTP requests to route functions. It extracts path and query parameters, validates them using Python type hints, executes the corresponding function, and serializes the returned data into a response.”
+
+# Lesson 3 — Request bodies and POST endpoints
+
+# Next, we'll learn how an API receives data from a client. This is essential for registration forms, creating database records, and sending input to AI models.
+
+# Concept 1: GET vs POST
+# - GET is commonly used to retrieve data.
+# - POST is commonly used to submit data or create a resource.
+# For example, a client may send a new student's name and age to your API.
+
+# Concept 2: Pydantic models
+# FastAPI commonly uses Pydantic models to define and validate JSON request bodies.
+
+from pydantic import BaseModel
+
+class Student(BaseModel):
+    name: str
+    age: int
+
+# This defines the expected structure of the incoming data. It doesn't create a database table.
+
+# Concept 3: Build a POST endpoint
+# Add this code to your existing main.py:
+# ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐
+
+from pydantic import BaseModel
+
+app = FastAPI()
+
+class Student(BaseModel):
+    name: str
+    age: int
+
+@app.post("/students")
+def create_student(student: Student):
+    return {
+        "message": "Student created successfully",
+        "student": student
+    }
+# ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐
+
+# Keep your existing routes and app = FastAPI() line. Add the BaseModel import near your other imports and put the model and endpoint at the top level, not inside another function.
+
+# In /docs, expand POST /students and try this request body:
+# {
+#   "name": "Aarav",
+#   "age": 22
+# }
+
+# FastAPI validates the incoming data against Student and returns the response.
+
+# Q1. Purpose of BaseModel
+# Correct. It defines the expected structure and validates incoming data. It does not automatically create a database table.
+
+# Q2. Invalid age
+# Correct. Sending "age": "hello" normally produces a 422 Unprocessable Entity response because the value cannot be validated as an integer.
+
+# Q3. Purpose of POST
+# Correct. POST commonly submits data to the server to create a resource or perform an operation.
+
+# 2. Let's test your POST endpoint
+
+from fastapi import FastAPI
+from pydantic import BaseModel
+
+app = FastAPI()
+
+class Student(BaseModel):
+    name: str
+    age: int
+
+@app.post("/students")
+def create_student(student: Student):
+    return {
+        "message": "Student created successfully",
+        "student": student
+    }
+
+# Step 1 — Start the server
+# In the VS Code terminal, from your project directory, run:
+# fastapi dev main.py
+
+# Step 2 — Open the interactive API documentation
+# Open this URL in your browser:
+# http://127.0.0.1:8000/docs
+# Find POST /students, expand it, and click Try it out.
+
+# Step 3 — Send valid JSON
+# Enter this in the request body:
+# {
+#   "name": "Aarav",
+#   "age": 22
+# }
+
+
+# Click Execute.
+# Your response should be similar to:
+# {
+#   "message": "Student created successfully",
+#   "student": {
+#     "name": "Aarav",
+#     "age": 22
+#   }
+# }
+
+# The HTTP status should normally be 200 OK, because we haven't explicitly configured a different success status code. FastAPI doesn't automatically save this student in a database; for now, the endpoint validates and returns the submitted data.
+
+# Step 4 — Test invalid input
+# Try changing the request body to:
+# {
+#   "name": "Aarav",
+#   "age": "hello"
+# }
+
+
+# You should receive a validation error, usually status code 422. The function won't run because FastAPI rejects the request before calling it.
+
+# Then try omitting the age field:
+# {
+#   "name": "Aarav"
+# }
+
+
+# This should also produce a validation error because age is a required field.
+
+# 3. Understand what happens internally
+# Client sends POST request
+# JSON: name and age
+
+# FastAPI validates the request
+# Checks required fields and data types
+
+# Valid input
+# Calls create_student() and returns a response.
+
+
+# Invalid input
+# Returns a validation error without calling the function.
+
+# Interview-ready explanation:
+# “I used a Pydantic model to define the expected JSON request body. FastAPI validates the incoming data before executing the endpoint function and automatically returns validation errors for invalid input.”
