@@ -758,9 +758,15 @@ class StudentUpdate(BaseModel):
     name: str | None = None
     age: int | None = None
 
-@app.get("/students")
-def get_students():
-    return students
+@app.get("/students/{student_id}")
+def get_student(student_id: int):
+    if student_id not in students:
+        raise HTTPException(
+            status_code=404,
+            detail="Student not found"
+        )
+
+    return students[student_id]
 
 @app.post("/students")
 def create_student(student:Student):
@@ -837,3 +843,13 @@ def delete_student(student_id: int):
 # 5. Interview practice
 # Here is a simple explanation you can use once you have tested the endpoints:
 # “I built a CRUD API using FastAPI to manage student records. I used Pydantic models for request validation and HTTPException to handle errors such as a student not being found. I implemented GET, POST, PUT, PATCH, and DELETE endpoints.”
+
+# ⭐HTTP status codes and validation revision
+
+# Status code	Meaning	Example in your API
+# 200 OK	Request succeeded	Fetch students
+# 201 Created	Resource created	Successfully add a student
+# 400 Bad Request	Request is not acceptable for the application's rules	PATCH with no fields to update
+# 404 Not Found	Requested resource doesn't exist	Student ID 99 is missing
+# 422 Unprocessable Entity	Request data failed validation	Age provided as "hello" instead of an integer
+# 500 Internal Server Error	Unexpected server-side error	An unhandled bug occurs
