@@ -602,3 +602,238 @@ def create_student(student: Student):
 # Interview-ready explanation:
     # “I used a POST endpoint to accept student data validated by a Pydantic model, generated a new ID, stored the record in a dictionary, and returned the created resource with HTTP 201 Created.”
 
+#⭐ Lesson 5 — PUT, PATCH, and DELETE
+
+# PUT — Replace the resource
+# Usually sends the complete resource representation. For our example, send both name and age to update the student.
+# Example: change the name to Aarav Sharma and age to 23.
+
+# PATCH — Partially update
+# Send only the fields you want to change.
+# Example: send just {"age": 23} and keep the existing name.
+
+# DELETE — Remove the resource
+# Removes the student record identified by its ID.
+# Example: DELETE /students/1 removes student 1.
+
+# A useful interview point: PUT is intended to be idempotent, meaning repeating the same replacement request should have the same intended final state. PATCH may or may not be idempotent, depending on the operation. DELETE is also defined as idempotent, even if the response to repeated requests differs.
+
+# 1. build the PUT endpoint
+class Student(BaseModel):
+    name: str
+    age: int
+
+@app.put("/students/{student_id}")
+def update_student(student_id: int, student: Student):
+    if student_id not in students:
+        raise HTTPException(
+            status_code=404,
+            detail="Student not found"
+        )
+
+    students[student_id] = student.model_dump()
+
+    return {
+        "student_id": student_id,
+        "student": students[student_id]
+    }
+
+# Understand the logic
+# 1. student_id identifies which student to update.
+# 2. student: Student receives and validates the complete request body.
+# 3. The if statement checks whether the student exists.
+# 4. student.model_dump() converts the Pydantic object into a regular Python dictionary.
+# 5. students[student_id] = ... replaces that student's existing record.
+
+#2. build the PATCH endpoint
+
+# For PATCH, we need a separate model because the client should be allowed to send only one field.
+
+class StudentUpdate(BaseModel):
+    name: str | None = None
+    age: int | None = None
+
+# Here, both fields are optional. That means the client can send only age, only name, or both.
+
+
+@app.patch("/students/{student_id}")
+def patch_student(student_id: int, update: StudentUpdate):
+    if student_id not in students:
+        raise HTTPException(
+            status_code=404,
+            detail="Student not found"
+        )
+
+    changes = update.model_dump(exclude_unset=True)
+
+    if not changes:
+        raise HTTPException(
+            status_code=400,
+            detail="Provide at least one field to update"
+        )
+
+    students[student_id].update(changes)
+
+    return {
+        "student_id": student_id,
+        "student": students[student_id]
+    }
+
+
+# Three important lines
+
+# A. exclude_unset=True
+
+# This includes only fields actually supplied by the client. It prevents an omitted field from being overwritten with its default None.
+
+# B. if not changes
+
+# This rejects a request with an empty body, because there is nothing to update.
+
+# C. students[student_id].update(changes)
+
+# Python's dictionary update() changes the supplied keys while preserving other existing keys.
+
+# For example, sending this request to PATCH /students/1:
+# {
+#   "age": 24
+# }
+
+# changes the age to 24 while keeping the student's existing name.
+
+# Note: because this beginner model allows None, explicitly sending "name": null or "age": null is also accepted. We can add stricter validation later if needed.
+
+#3. build the DELETE endpoint
+
+
+@app.delete("/students/{student_id}")
+def delete_student(student_id: int):
+    if student_id not in students:
+        raise HTTPException(
+            status_code=404,
+            detail="Student not found"
+        )
+
+    deleted_student = students.pop(student_id)
+
+    return {
+        "message": "Student deleted successfully",
+        "student": deleted_student
+    }
+
+
+# students.pop(student_id) removes the record and returns its previous value. We save that value in deleted_student so we can include it in the response.
+# - Existing ID: removes the record and returns a success response.
+# - Missing ID: returns 404 Not Found.
+# For simplicity, this endpoint returns 200 OK with a response body. Another valid design is 204 No Content, which must not return a response body.
+
+# Remember these differences:
+# Method |	Purpose |	Request body
+# GET |		Retrieve a resource |	Usually none
+# POST |		Create a resource or submit data |	Commonly required
+# PUT |		Replace a resource | Complete representation
+# PATCH	 |	Partially update a resource |		Changed fields
+# DELETE |		Remove a resource	 |	Usually none
+
+# Interview-ready explanation:
+
+# “I implemented CRUD-style endpoints in FastAPI. GET retrieves student records, POST creates them, PUT replaces a complete record, PATCH updates selected fields, and DELETE removes a record. I also used Pydantic validation and HTTPException for missing resources.”
+
+#⭐ Build your Student API independently
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+
+app = FastAPI()
+
+students = {
+    1: {"name": "Aarav", "age": 22},
+    2: {"name": "Priya", "age": 23}
+}
+
+class Student(BaseModel):
+    name: str
+    age: int
+
+class StudentUpdate(BaseModel):
+    name: str | None = None
+    age: int | None = None
+
+@app.get("/students")
+def get_students():
+    return students
+
+@app.post("/students")
+def create_student(student:Student):
+    new_id = max(students.keys()) + 1
+      
+    students[new_id] = {
+        "name": student.name,
+        "age": student.age
+        }
+      
+    return {
+        "student_id": new_id,
+        "name": student.name,
+        "age": student.age,
+        "message": "Student created successfully",}
+
+
+@app.put("/students/{student_id}")
+def update_student(student_id: int, student: Student):
+    if student_id not in students:
+        raise HTTPException(
+            status_code=404,
+            detail="Student not found"
+        )
+
+    students[student_id] = student.model_dump()
+
+    return {
+        "student_id": student_id,
+        "student": students[student_id]
+    }
+
+@app.patch("/students/{student_id}")
+def patch_students(student_id: int, update: StudentUpdate):
+    if student_id not in students:
+        raise HTTPException(
+            status_code= 404,
+            detail="Student not found"
+        )
+
+    changes = update.model_dump(exclude_unset=True)
+    if not changes:
+        raise HTTPException(
+            status_code= 400,
+            detail="Provide at least one field to update"
+        )
+
+    students[student_id].update(changes)
+    return {
+        "student_id": student_id,
+        "student": students[student_id]
+    }
+
+@app.delete("/students/{student_id}")
+def delete_student(student_id: int):
+    if student_id not in students:
+        raise HTTPException(
+            status_code=404,
+            detail="Student not found"
+        )
+
+    deleted_student = students.pop(student_id)
+
+    return {
+        "message": "Student deleted successfully",
+        "student": deleted_student
+    }
+
+
+# Interview-ready explanation:
+
+# “I built a basic CRUD API using FastAPI, with endpoints for retrieving, creating, updating, and deleting student records. I used Pydantic models for input validation and HTTPException to handle missing resources.”
+
+# 5. Interview practice
+# Here is a simple explanation you can use once you have tested the endpoints:
+# “I built a CRUD API using FastAPI to manage student records. I used Pydantic models for request validation and HTTPException to handle errors such as a student not being found. I implemented GET, POST, PUT, PATCH, and DELETE endpoints.”
